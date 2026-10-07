@@ -141,7 +141,7 @@
       ],
       "path": "assets/heroes/archmage.png",
       "prompt": "Use case: stylized-concept. Asset: ONE square heroes game illustration for 双生纹. Subject: portrait of an ancient sage in indigo linen robes, holding a small blue charm stone, calm eyes, chest-up; no technological clothes. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "kind": "heroes",
