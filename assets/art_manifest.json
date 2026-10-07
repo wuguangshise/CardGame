@@ -691,13 +691,17 @@
       "kind": "backgrounds",
       "name": "title",
       "size": [
-        1280,
-        800
+        1586,
+        992
       ],
       "subject": "a peaceful ancient stone gateway in a legendary forest, a small softly lit carved stone monument, understated moss and distant hills, muted dusk colors; quiet empty central upper area for game title and lower central area for start button. Landscape 16:10",
       "path": "assets/backgrounds/title.png",
       "prompt": "Use case: stylized-concept. Asset: ONE production game backgrounds image for 双生纹. Subject: a peaceful ancient stone gateway in a legendary forest, a small softly lit carved stone monument, understated moss and distant hills, muted dusk colors; quiet empty central upper area for game title and lower central area for start button. Landscape 16:10. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
-      "status": "pending"
+      "target_size": [
+        1280,
+        800
+      ],
+      "status": "complete"
     },
     {
       "kind": "ui",
