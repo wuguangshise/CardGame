@@ -13,24 +13,28 @@ from dataclasses import dataclass, field
 from .cards import BLUE, FIELD_TYPES, FIRST, GREEN, RED, SECOND, SPECIES, Card, starter_deck
 
 HERO_HP = 15
+BASE_ATK = 1
 START_POWER = 12
 OPEN_HAND = 4
 DRAW_PER_TURN = 2
 HAND_LIMIT_END = 5
 HAND_LIMIT_TURN = 8
-SHIELD_ROUNDS = 2
+SHIELD_ROUNDS = 1  # 护盾挡对方接下来 1 个回合，守护者挡 2 个回合
 L3_ROUNDS = 2
 EVOLVE_BONUS = 1  # 红纹进化 +1 攻，绿纹进化 +1 血（加纹值会让 2 级纹兽一出来就 6 攻，超过场攻上限）
 
 CLASSES = {
-    "warrior": "红 · 战士（基础攻击 2）",
+    "warrior": "红 · 战士（每回合第一张红牌 -1 费）",
     "archmage": "蓝 · 大魔导师（每回合第一张蓝牌 -1 费）",
-    "guardian": "绿 · 守护者（护盾持续 3 回合）",
+    "guardian": "绿 · 守护者（护盾多挡对方 1 个回合）",
 }
 
 
 MARK = {RED: "赤", GREEN: "翠", BLUE: "苍"}
 DAMAGE_EFFECTS = {"field_damage", "damage", "burn", "storm"}
+
+
+CLASS_DISCOUNT = {"warrior": RED, "archmage": BLUE}
 
 
 class RuleError(Exception):
@@ -157,14 +161,14 @@ class Player:
     vs_beast: int = 0
     draw_on_attack: bool = False
     extended: bool = False
-    blue_discount: bool = False
+    discount_used: bool = False
     burn: int = 0
     deck_empty: bool = False
     known_defense: Card | None = None  # 洞察看到的对方盖牌
 
     @property
     def base_atk(self) -> int:
-        return 2 if self.cls == "warrior" else 1
+        return BASE_ATK
 
     def shield_total(self) -> int:
         return sum(s.amount for s in self.shields)
@@ -271,13 +275,14 @@ class Game:
         p.power -= n
 
     def card_cost(self, p: Player, card: Card) -> int:
-        if card.color == BLUE and p.cls == "archmage" and not p.blue_discount:
+        """职业被动：战士每回合第一张红牌 -1 费，大魔导师每回合第一张蓝牌 -1 费。"""
+        if CLASS_DISCOUNT.get(p.cls) == card.color and not p.discount_used:
             return max(0, card.cost - 1)
         return card.cost
 
-    def _use_blue_discount(self, p: Player, card: Card) -> None:
-        if card.color == BLUE and p.cls == "archmage":
-            p.blue_discount = True
+    def _use_class_discount(self, p: Player, card: Card) -> None:
+        if CLASS_DISCOUNT.get(p.cls) == card.color:
+            p.discount_used = True
 
     def precheck(self, p: Player, card: Card) -> None:
         if card.effect in DAMAGE_EFFECTS and p.turns <= 1:
@@ -408,7 +413,7 @@ class Game:
         p.vs_beast = 0
         p.draw_on_attack = False
         p.extended = False
-        p.blue_discount = False
+        p.discount_used = False
         self.log(f"\n===== {p.name}的第 {p.turns} 回合 =====")
         for s in p.shields:
             s.rounds -= 1
@@ -476,7 +481,7 @@ class Game:
             self.log(f"  {p.name}回合结束献祭了一张牌，纹力 +1")
 
     def new_shield(self, p: Player, amount: int, thorns=False) -> Shield:
-        rounds = 3 if p.cls == "guardian" else SHIELD_ROUNDS
+        rounds = SHIELD_ROUNDS + 1 if p.cls == "guardian" else SHIELD_ROUNDS
         return Shield(amount, rounds, thorns)
 
     def heal(self, p: Player, n: int) -> None:
@@ -495,7 +500,7 @@ class Game:
         except RuleError:
             p.hand.append(card)
             raise
-        self._use_blue_discount(p, card)
+        self._use_class_discount(p, card)
         self.log(f"▶ {p.name}打出【{card.name}】：{card.text}")
         try:
             self.resolve(p, card)
@@ -516,7 +521,7 @@ class Game:
         p.hand.remove(main)
         p.hand.remove(addon)
         p.power -= cost
-        self._use_blue_discount(p, main)
+        self._use_class_discount(p, main)
         self.log(f"▶ {p.name}合纹【{main.name}】+【{addon.name}】")
         try:
             self.resolve(p, main)
@@ -530,8 +535,9 @@ class Game:
             p.pierce = True
             self.log("  红纹附加：本回合角色攻击无视护盾")
         elif addon.color == GREEN:
-            p.shields.append(self.new_shield(p, addon.sigil))
-            self.log(f"  绿纹附加：角色获得 {addon.sigil} 护盾")
+            n = math.ceil(addon.sigil / 2)
+            p.shields.append(self.new_shield(p, n))
+            self.log(f"  绿纹附加：角色获得 {n} 护盾")
         else:
             n = math.ceil(addon.sigil / 2)
             if n == 0:
@@ -562,10 +568,11 @@ class Game:
             raise RuleError("需要一红一绿，这个位置已经有同色的牌了")
         self.take_from_hand(p, card)
         try:
-            self.pay(p, card.cost)
+            self.pay(p, self.card_cost(p, card))
         except RuleError:
             p.hand.append(card)
             raise
+        self._use_class_discount(p, card)
         if cur is None:
             p.beasts[slot] = Pending(card)
             self.log(f"▶ {p.name}在纹兽位 {slot + 1} 盖了一张牌")
@@ -621,7 +628,7 @@ class Game:
         except RuleError:
             p.hand.append(card)
             raise
-        self._use_blue_discount(p, card)
+        self._use_class_discount(p, card)
         if isinstance(cur, Field):
             p.grave += [cur.first, cur.second]
             self.log(f"  {p.name}覆盖了旧的{cur.name}")

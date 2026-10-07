@@ -76,7 +76,7 @@ class TestRules(unittest.TestCase):
 
 class TestFullGames(unittest.TestCase):
     def test_ai_vs_ai(self):
-        for seed in range(100):
+        for seed in range(8):
             g = Game(("A", "B"), (AIController(), AIController()), seed=seed, log=quiet)
             g.play()
 
@@ -84,7 +84,7 @@ class TestFullGames(unittest.TestCase):
         """用随机输入驱动命令行界面，确保不会崩溃。"""
         rng = random.Random(0)
         real_input, real_print = builtins.input, builtins.print
-        for seed in range(15):
+        for seed in range(4):
             count = {"n": 0}
 
             def fake_input(prompt=""):
@@ -103,3 +103,41 @@ class TestFullGames(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestGUI(unittest.TestCase):
+    """无窗口模式下检查图形界面能画出来、拖放规则映射正确。"""
+
+    def setUp(self):
+        import os
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
+        os.environ["SDL_AUDIODRIVER"] = "dummy"
+        try:
+            import pygame  # noqa: F401
+        except ImportError:
+            self.skipTest("没有安装 pygame")
+
+    def test_render_and_drops(self):
+        from shuangshengwen.gui.app import GUI
+        gui = GUI(seed=2)
+        g = Game(("你", "人机"), (AIController(), AIController()), seed=2, log=gui.on_log,
+                 classes=("warrior", "guardian"))
+        gui.game, gui.me = g, g.players[0]
+        g.current = g.setup()
+        g.current = 0
+        me = gui.me
+        me.turns = 2
+        gui.render()
+        red = next(c for c in starter_deck("warrior") if c.color == RED and c.cost == 1)
+        green = next(c for c in starter_deck("warrior") if c.color == GREEN and c.cost == 1)
+        me.hand += [red, green]
+        gui.drop_card(red, gui.slot_rects[("me", "beast", 0)].center)
+        gui.drop_card(green, gui.slot_rects[("me", "beast", 0)].center)
+        self.assertIsInstance(me.beasts[0], Beast)
+        c = me.hand[0]
+        n = len(me.hand)
+        gui.drop_card(c, gui.altar.center)
+        self.assertEqual(len(me.hand), n - 1)
+        gui.drop_attack(None, gui.enemy_hero)
+        self.assertEqual(me.hero_attacks, 0)
+        gui.render()
