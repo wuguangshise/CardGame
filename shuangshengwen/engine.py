@@ -15,6 +15,7 @@ from .cards import BLUE, FIELD_TYPES, FIRST, GREEN, RED, SECOND, SPECIES, Card, 
 HERO_HP = 15
 BASE_ATK = 1
 START_POWER = 12
+SECOND_BONUS_POWER = 1  # 后手多 1 纹力，抵消先手优势
 OPEN_HAND = 4
 DRAW_PER_TURN = 2
 HAND_LIMIT_END = 5
@@ -35,6 +36,7 @@ DAMAGE_EFFECTS = {"field_damage", "damage", "burn", "storm"}
 
 
 CLASS_DISCOUNT = {"warrior": RED, "archmage": BLUE}
+EVERY_CARD_DISCOUNT = {"archmage"}  # 大魔导师每张蓝牌都 -1 费
 
 
 class RuleError(Exception):
@@ -276,7 +278,7 @@ class Game:
 
     def card_cost(self, p: Player, card: Card) -> int:
         """职业被动：战士每回合第一张红牌 -1 费，大魔导师每回合第一张蓝牌 -1 费。"""
-        if CLASS_DISCOUNT.get(p.cls) == card.color and not p.discount_used:
+        if CLASS_DISCOUNT.get(p.cls) == card.color and (not p.discount_used or p.cls in EVERY_CARD_DISCOUNT):
             return max(0, card.cost - 1)
         return card.cost
 
@@ -390,6 +392,7 @@ class Game:
             p.is_first = i == first
             self.draw(p, OPEN_HAND)
         self.draw(self.players[1 - first], 1)
+        self.players[1 - first].power += SECOND_BONUS_POWER
         return first
 
     # ---------- 回合 ----------
@@ -837,7 +840,7 @@ class Game:
                 targets.append(i)
             t = targets[self.ask(p, "target_damage", "选择目标", opts)]
             if t is None:
-                d = self.hit_hero(foe, prm["amount"])
+                d = self.hit_hero(foe, prm["amount"], pierce=prm.get("pierce", False))
                 self.log(f"  {foe.name}受到 {d} 伤害")
             else:
                 self.hit_beast(foe, t, prm["amount"])
@@ -853,24 +856,25 @@ class Game:
                 if p.turns <= 1:
                     self.log("  混沌：伤害，但第一回合不能造成伤害")
                 else:
-                    d = self.hit_hero(foe, 3)
+                    d = self.hit_hero(foe, 4)
                     self.log(f"  混沌：{foe.name}受到 {d} 伤害")
             elif pick == "heal":
                 self.log("  混沌：回血")
-                self.heal(p, 3)
+                self.heal(p, 4)
             else:
-                self.log("  混沌：抽 2 张")
-                self.draw(p, 2)
+                self.log("  混沌：抽 3 张")
+                self.draw(p, 3)
         elif e == "dispel":
             foe.shields = []
             self.log(f"  {foe.name}的护盾全部消失")
+            self.draw(p, prm.get("draw", 0))
         elif e == "peek":
             p.known_defense = foe.defense
             if foe.defense:
                 self.log(f"  {p.name}看到了对方的防御纹盖牌")
             else:
                 self.log("  对方防御纹是空的")
-            self.draw(p, 1)
+            self.draw(p, prm.get("draw", 1))
         elif e in ("field_ward", "field_fortify"):
             slots = [i for i, f in enumerate(p.fields) if isinstance(f, Field)]
             if not slots:
@@ -892,10 +896,10 @@ class Game:
             foe.beasts[i].sealed = 1
         elif e == "storm":
             self.first_turn_guard(p)
-            d = self.hit_hero(foe, prm["amount"])
+            d = self.hit_hero(foe, prm["amount"], pierce=True)
             self.log(f"  {foe.name}受到 {d} 伤害")
             for i, _ in foe.live_beasts():
-                self.hit_beast(foe, i, prm["amount"])
+                self.hit_beast(foe, i, prm["amount"], pierce=True)
         elif e == "break_defense":
             if foe.defense:
                 foe.grave.append(foe.defense)

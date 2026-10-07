@@ -1,46 +1,60 @@
-"""电脑对电脑跑很多局，统计胜率和对局长度，用来检查数值。
+"""电脑对电脑跑很多局，统计职业胜率、先后手胜率和对局长度，用来检查数值。
 
-运行：python3 simulate.py           跑 300 局
-      python3 simulate.py 1000 --log 1    跑 1000 局，并打印第 1 局的完整过程
+运行：python3 simulate.py              每种职业组合各 20 局（共 180 局）
+      python3 simulate.py 100          每种组合各 100 局
+      python3 simulate.py 1 --log      打印一局的完整过程
 """
 
 import argparse
 import itertools
 from collections import Counter
+from multiprocessing import Pool, cpu_count
 
-from shuangshengwen.ai import AIController
-from shuangshengwen.engine import Game
+CLASSES = ["warrior", "archmage", "guardian"]
 
 
-def run(n: int, show: int | None = None):
-    wins, turns, firsts, hp_left = Counter(), [], Counter(), []
-    classes = ["warrior", "archmage", "guardian"]
-    pairs = list(itertools.product(classes, classes))
-    for k in range(n):
-        cls = pairs[k % len(pairs)]
-        log = print if show == k + 1 else (lambda *a, **kw: None)
-        g = Game(("甲", "乙"), (AIController(), AIController()), seed=k, log=log, classes=cls)
-        w = g.play()
-        total = sum(p.turns for p in g.players)
-        turns.append(total)
+def one_game(args):
+    a, b, seed = args
+    from shuangshengwen.ai import AIController
+    from shuangshengwen.engine import Game
+    g = Game(("甲", "乙"), (AIController(), AIController()), seed=seed, log=lambda *x: None, classes=(a, b))
+    w = g.play()
+    return a, b, (w.cls if w else None), (w.is_first if w else None), sum(p.turns for p in g.players)
+
+
+def run(per_pair: int) -> None:
+    jobs = [(a, b, k * 13 + 7) for a, b in itertools.product(CLASSES, repeat=2) for k in range(per_pair)]
+    with Pool(max(1, cpu_count())) as pool:
+        out = pool.map(one_game, jobs, chunksize=4)
+    res, games, first, turns = Counter(), Counter(), Counter(), []
+    for a, b, w, f, t in out:
+        turns.append(t)
         if w is None:
-            wins["平局/超时"] += 1
             continue
-        wins[f"{w.cls}"] += 1
-        firsts["先手赢" if w.is_first else "后手赢"] += 1
-        hp_left.append(w.hp)
-    print(f"共 {n} 局（职业轮流对战）")
-    print("胜场（按赢家职业）：", dict(wins))
-    print("先后手：", dict(firsts))
-    print(f"平均总回合数：{sum(turns) / len(turns):.1f}（每人约 {sum(turns) / len(turns) / 2:.1f} 回合）")
-    print(f"总回合数分布：最短 {min(turns)}，最长 {max(turns)}")
-    if hp_left:
-        print(f"赢家平均剩余血量：{sum(hp_left) / len(hp_left):.1f}")
+        games[(a, b)] += 1
+        res[(a, b, w)] += 1
+        first[f] += 1
+    print(f"共 {len(out)} 局")
+    for a, b in itertools.combinations(CLASSES, 2):
+        n = games[(a, b)] + games[(b, a)]
+        wa = res[(a, b, a)] + res[(b, a, a)]
+        print(f"  {a} 对 {b}：{a} 胜率 {wa / n:.0%}（{n} 局）")
+    done = first[True] + first[False]
+    print(f"先手胜率：{first[True] / done:.0%}")
+    print(f"平均每人回合数：{sum(turns) / len(turns) / 2:.1f}，超时局：{len(out) - done}")
+
+
+def show_one() -> None:
+    from shuangshengwen.ai import AIController
+    from shuangshengwen.engine import Game
+    g = Game(("甲", "乙"), (AIController(), AIController()), seed=1)
+    w = g.play()
+    print(f"\n{w.name}获胜" if w else "\n平局")
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("n", type=int, nargs="?", default=300)
-    ap.add_argument("--log", type=int, help="打印第几局的完整过程")
+    ap.add_argument("n", type=int, nargs="?", default=20, help="每种职业组合打几局")
+    ap.add_argument("--log", action="store_true", help="打印一局的完整过程")
     a = ap.parse_args()
-    run(a.n, a.log)
+    show_one() if a.log else run(a.n)
