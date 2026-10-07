@@ -74,8 +74,11 @@ python3 -m unittest discover -s tests -t .   # 跑测试
 
 ## 美术
 
-现在的图都是代码画的（卡面纹路、纹兽几何造型、纹域地板光线）。正式插画用 AI 绘图工具生成，
-提示词和文件命名规则见 [ART_PROMPTS.md](ART_PROMPTS.md)，放进 `assets/` 目录就会自动替换。
+美术采用古老传说感的日漫手绘风格：清晰线稿、平涂上色、少量阴影。
+正式插画位于 `assets/`，包含40张卡面、9种透明纹兽、3个职业头像，以及9张背景与界面素材。
+提示词和文件命名规则见 [ART_PROMPTS.md](ART_PROMPTS.md)，逐项完成状态见 `assets/art_manifest.json`。
+启动游戏即可加载；缺图时保留程序占位图。纹兽进化纹路、背景飘叶与微光、伤害斩击和治疗波纹由程序绘制。
+卡牌文字与数值由程序绘制，插画不含文字。可执行 `python tools/check_art.py` 检查全部素材（需要Pillow）。
 
 ## 代码结构
 
@@ -90,3 +93,4 @@ play.py                      命令行版入口
 simulate.py                  批量模拟
 assets/                      放正式插画的地方
 ```
+

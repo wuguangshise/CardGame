@@ -21,15 +21,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 ASSETS = os.path.join(ROOT, "assets")
 
 # ---------------------------------------------------------------- 配色
-BG = (14, 16, 24)
-BOARD = (24, 27, 40)
-BOARD_EDGE = (52, 58, 84)
+BG = (22, 29, 27)
+BOARD = (35, 43, 37)
+BOARD_EDGE = (94, 98, 73)
 INK = (232, 230, 220)
 DIM = (140, 144, 160)
 GOLD = (232, 190, 92)
 DANGER = (230, 80, 70)
 OK = (110, 210, 140)
-PANEL = (32, 36, 54)
+PANEL = (37, 45, 39)
 
 COLOR = {RED: (214, 72, 60), GREEN: (64, 182, 112), BLUE: (66, 140, 232)}
 COLOR_DARK = {RED: (70, 22, 20), GREEN: (18, 58, 36), BLUE: (18, 38, 74)}
@@ -118,6 +118,56 @@ def asset(kind: str, name: str, size: tuple[int, int]):
     return _images[key]
 
 
+def draw_background(surf, rect: pygame.Rect, name: str, t: float):
+    """Static hand-drawn art with inexpensive drifting leaves and fireflies."""
+    background = asset("backgrounds", name, rect.size)
+    if background:
+        surf.blit(background, rect.topleft)
+        veil = pygame.Surface(rect.size, pygame.SRCALPHA)
+        veil.fill((10, 22, 16, 55))
+        surf.blit(veil, rect.topleft)
+    else:
+        pygame.draw.rect(surf, BOARD, rect)
+    layer = pygame.Surface(rect.size, pygame.SRCALPHA)
+    rng = random.Random(2718)
+    for k in range(14):
+        x = (rng.uniform(0, rect.w) + t * (3 + k % 4)) % rect.w
+        y = (rng.uniform(0, rect.h) + t * (2 + k % 3)) % rect.h
+        if k % 3:
+            pygame.draw.ellipse(layer, (161, 177, 112, 70), (x, y, 7, 3))
+        else:
+            alpha = 45 + int(35 * (1 + math.sin(t + k)))
+            pygame.draw.circle(layer, (230, 214, 140, alpha), (x, y), 2)
+    surf.blit(layer, rect.topleft)
+
+
+def draw_impact(surf, center, color, age: float, healing=False):
+    """Short cel-style impact slash or healing ripple, without frame images."""
+    duration = 0.45
+    if not 0 <= age < duration:
+        return
+    progress = age / duration
+    alpha = round(200 * (1 - progress))
+    layer = pygame.Surface((160, 160), pygame.SRCALPHA)
+    rgba = (*color, alpha)
+    radius = round(12 + progress * 48)
+    pygame.draw.circle(layer, rgba, (80, 80), radius, 2)
+    if healing:
+        for k in range(4):
+            angle = k * math.pi / 2 + progress
+            point = (round(80 + math.cos(angle) * radius), round(80 + math.sin(angle) * radius))
+            pygame.draw.circle(layer, rgba, point, 3)
+    else:
+        width = max(1, round(6 * (1 - progress)))
+        pygame.draw.line(layer, rgba, (35, 112), (122, 35), width)
+        for k in range(6):
+            angle = k * math.tau / 6
+            start = (round(80 + math.cos(angle) * radius), round(80 + math.sin(angle) * radius))
+            end = (round(80 + math.cos(angle) * (radius + 12)), round(80 + math.sin(angle) * (radius + 12)))
+            pygame.draw.line(layer, rgba, start, end, 2)
+    surf.blit(layer, (center[0] - 80, center[1] - 80))
+
+
 # ---------------------------------------------------------------- 纹路
 def seed_of(s: str) -> int:
     return int(hashlib.md5(s.encode("utf-8")).hexdigest()[:8], 16)
@@ -175,6 +225,9 @@ def draw_card(surf, card: Card, topleft, scale=1.0, cost=None, highlight=None, d
     pygame.draw.rect(s, (12, 12, 16), (0, 0, CARD_W, CARD_H), border_radius=12)
     pygame.draw.rect(s, c, (2, 2, CARD_W - 4, CARD_H - 4), border_radius=11)
     pygame.draw.rect(s, dark, (7, 7, CARD_W - 14, CARD_H - 14), border_radius=8)
+    frame = asset("ui", f"card_frame_{card.color}", (CARD_W, CARD_H))
+    if frame:
+        s.blit(frame, (0, 0))
     art = pygame.Rect(12, 30, CARD_W - 24, 66)
     pygame.draw.rect(s, (8, 10, 16), art, border_radius=6)
     img = asset("cards", card.name, art.size)
@@ -215,6 +268,9 @@ def draw_card_back(surf, rect: pygame.Rect, label: str | None = None):
     pygame.draw.rect(surf, (48, 40, 72), inner, border_radius=8)
     sigil_pattern(surf, inner.inflate(-8, -8), (190, 160, 255), 7, density=4, width=1, alpha=180)
     pygame.draw.rect(surf, GOLD, inner, 1, border_radius=8)
+    backing = asset("ui", "card_back", rect.size)
+    if backing:
+        surf.blit(backing, rect.topleft)
     if label:
         text(surf, label, rect.center, 14, INK, center=True, bold=True)
 
@@ -285,6 +341,9 @@ def draw_beast(surf, rect: pygame.Rect, b, atk_shown: int, selected=False, can_a
 def draw_field_floor(surf, rect: pygame.Rect, first: str, second: str, t: float):
     """纹域生效后地板上的光线；两种颜色交叉成渐变纹。"""
     layer = pygame.Surface(rect.size, pygame.SRCALPHA)
+    floor = asset("fields", first, rect.size)
+    if floor:
+        layer.blit(floor, (0, 0))
     c1, c2 = COLOR_GLOW[first], COLOR_GLOW[second]
     n = 9
     for k in range(n):

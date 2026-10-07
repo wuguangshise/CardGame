@@ -1,7 +1,7 @@
 # 《双生纹》美术提示词
 
-现在游戏里的图都是代码画的占位图。用 AI 绘图工具（Midjourney、Stable Diffusion、即梦、通义万相等）生成正式插画后，
-按下面的文件名放进 `assets/` 目录，游戏启动时会自动换上，不用改代码。
+本版采用古老传说感的日漫手绘风格：清晰线稿、平涂上色、少量阴影和简洁背景。
+正式素材按下面的文件名放进 `assets/` 目录，游戏启动时会自动加载；缺图时仍使用程序占位图。
 
 | 放在哪里 | 文件名 | 建议尺寸 |
 | --- | --- | --- |
@@ -88,6 +88,34 @@ Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown c
 | 封印 | 蓝 | `blue chains of runes binding a snarling beast` |
 | 魔力风暴 | 蓝 | `a storm of blue lightning and runes sweeping across a battlefield` |
 | 破法 | 蓝 | `a blue hand crushing a face-down card into fragments` |
+
+## 场景与界面（9 张）
+
+| 文件 | 内容 | 尺寸 |
+| --- | --- | --- |
+| `assets/backgrounds/battle.png` | 古树环绕的石庭战场，中央保留空旷地面 | 1010 × 800 |
+| `assets/backgrounds/title.png` | 古老森林门庭，标题和按钮区域留白 | 1280 × 800 |
+| `assets/ui/card_back.png` | 古铜纹章、三色纹石与简洁藤纹 | 248 × 352 |
+| `assets/ui/card_frame_red.png` | 红纹卡框，空白深色内部 | 248 × 352 |
+| `assets/ui/card_frame_green.png` | 绿纹卡框，空白深色内部 | 248 × 352 |
+| `assets/ui/card_frame_blue.png` | 蓝纹卡框，空白深色内部 | 248 × 352 |
+| `assets/fields/red.png` | 战意石庭、红纹徽记 | 400 × 260 |
+| `assets/fields/green.png` | 守护石庭、绿纹与根系 | 400 × 260 |
+| `assets/fields/blue.png` | 秘法石庭、蓝纹与星记 | 400 × 260 |
+
+完整61张素材的生成提示词、目标尺寸和完成状态保存在 `assets/art_manifest.json`。
+背景飘叶、微光、纹域脉动、伤害斩击和治疗波纹由程序绘制，不需要GIF或额外逐帧图片。
+文字、费用和规则仍由程序绘制，插画本身不带文字。
+
+## 检查素材
+
+```bash
+python -m pip install Pillow pygame-ce
+python tools/check_art.py
+```
+
+该命令核对完整卡池与纹兽名称、尺寸、透明背景，以及实际Pygame图片加载与绘制。
+制作中可加 `--allow-incomplete` 只检查已完成的图片。
 
 ## 小贴士
 

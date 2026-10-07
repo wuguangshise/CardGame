@@ -107,7 +107,7 @@ class GUI:
     def render(self, overlay=None):
         s = self.screen
         s.fill(art.BG)
-        pygame.draw.rect(s, BOARD, (0, 0, LOG_X, H))
+        art.draw_background(s, pygame.Rect(0, 0, LOG_X, H), "battle", time.time())
         pygame.draw.line(s, BOARD_EDGE, (0, 350), (LOG_X, 350), 1)
         g, me = self.game, self.me
         if g and me:
@@ -166,6 +166,7 @@ class GUI:
                         and not b.sealed and p.turns > 1
                     sel = self.drag and self.drag[0] == "attack" and self.drag[1] == i and mine
                     art.draw_beast(s, r, b, p.beast_atk(b), selected=sel, can_attack=can)
+                    self.track_hp(b, r.center)
                 elif isinstance(b, Pending):
                     pygame.draw.ellipse(s, (30, 32, 46), r)
                     art.draw_card_back(s, pygame.Rect(r.centerx - 30, r.top + 14, 60, 84), "1/2")
@@ -214,6 +215,7 @@ class GUI:
         self.popups = [p for p in self.popups if now - p[4] < 1.2]
         for x, y, t, c, born in self.popups:
             k = now - born
+            art.draw_impact(self.screen, (x + 70, y), c, k, healing=t.startswith("+"))
             art.text(self.screen, t, (x, y - k * 40), 30, c, center=True, bold=True)
 
     def draw_hand(self, me: Player):
@@ -522,6 +524,7 @@ class GUI:
             s = self.screen
             s.fill(art.BG)
             t = time.time()
+            art.draw_background(s, s.get_rect(), "title", t)
             r = pygame.Rect(W // 2 - 300, 60, 600, 360)
             art.draw_field_floor(s, r, "red", "blue", t)
             art.text(s, "双生纹", (W // 2, 210), 96, GOLD, center=True, bold=True)
@@ -610,3 +613,4 @@ def main(argv=None):
     ap.add_argument("--no-timer", action="store_true", help="关闭每回合 30 秒计时")
     a = ap.parse_args(argv)
     GUI(seed=a.seed, timer=not a.no_timer).run()
+

@@ -627,13 +627,13 @@
       "kind": "cards",
       "name": "秘法盾",
       "color": "蓝",
-      "subject": "a hexagonal blue arcane shield made of circuitry-like lines",
+      "subject": "a hexagonal blue arcane shield made of simple ancient geometric sigil lines",
       "size": [
         400,
         260
       ],
       "path": "assets/cards/秘法盾.png",
-      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a hexagonal blue arcane shield made of circuitry-like lines. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a hexagonal blue arcane shield made of simple ancient geometric sigil lines. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting. Strictly no technological motifs or circuitry.",
       "status": "complete"
     },
     {
@@ -674,6 +674,114 @@
       "path": "assets/cards/破法.png",
       "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blue hand crushing a face-down card into fragments. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
       "status": "complete"
+    },
+    {
+      "kind": "backgrounds",
+      "name": "battle",
+      "size": [
+        1010,
+        800
+      ],
+      "subject": "ancient stone courtyard under immense old forest trees, low side framing foliage and weathered pillars at edges; large quiet empty central paving for a card battle, subdued forest dusk colors, no creatures, no UI, no labels, no cards. Portrait-ish 101:80 game board background",
+      "path": "assets/backgrounds/battle.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game backgrounds image for 双生纹. Subject: ancient stone courtyard under immense old forest trees, low side framing foliage and weathered pillars at edges; large quiet empty central paving for a card battle, subdued forest dusk colors, no creatures, no UI, no labels, no cards. Portrait-ish 101:80 game board background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "backgrounds",
+      "name": "title",
+      "size": [
+        1280,
+        800
+      ],
+      "subject": "a peaceful ancient stone gateway in a legendary forest, a small softly lit carved stone monument, understated moss and distant hills, muted dusk colors; quiet empty central upper area for game title and lower central area for start button. Landscape 16:10",
+      "path": "assets/backgrounds/title.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game backgrounds image for 双生纹. Subject: a peaceful ancient stone gateway in a legendary forest, a small softly lit carved stone monument, understated moss and distant hills, muted dusk colors; quiet empty central upper area for game title and lower central area for start button. Landscape 16:10. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "ui",
+      "name": "card_back",
+      "size": [
+        248,
+        352
+      ],
+      "subject": "ONE full portrait card-back design, an ancient bronze medallion with three small red green blue stones, symmetrical simple carved vine trim, muted charcoal forest green backing, rounded outer corners; no text, no card-face slots. Portrait 31:44",
+      "path": "assets/ui/card_back.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game ui image for 双生纹. Subject: ONE full portrait card-back design, an ancient bronze medallion with three small red green blue stones, symmetrical simple carved vine trim, muted charcoal forest green backing, rounded outer corners; no text, no card-face slots. Portrait 31:44. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "ui",
+      "name": "card_frame_red",
+      "size": [
+        248,
+        352
+      ],
+      "subject": "ONE blank portrait card FACE backing for crimson cards. Thin simple antique bronze corner ornaments and crimson rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44",
+      "path": "assets/ui/card_frame_red.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game ui image for 双生纹. Subject: ONE blank portrait card FACE backing for crimson cards. Thin simple antique bronze corner ornaments and crimson rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "ui",
+      "name": "card_frame_green",
+      "size": [
+        248,
+        352
+      ],
+      "subject": "ONE blank portrait card FACE backing for jade cards. Thin simple antique bronze corner ornaments and jade rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44",
+      "path": "assets/ui/card_frame_green.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game ui image for 双生纹. Subject: ONE blank portrait card FACE backing for jade cards. Thin simple antique bronze corner ornaments and jade rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "ui",
+      "name": "card_frame_blue",
+      "size": [
+        248,
+        352
+      ],
+      "subject": "ONE blank portrait card FACE backing for indigo cards. Thin simple antique bronze corner ornaments and indigo rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44",
+      "path": "assets/ui/card_frame_blue.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game ui image for 双生纹. Subject: ONE blank portrait card FACE backing for indigo cards. Thin simple antique bronze corner ornaments and indigo rim around dark desaturated forest charcoal flat center. Large blank quiet interior, no artwork, no text, no symbols, no slots; game draws illustration, title, cost and rules on top. Rounded corners. Portrait 31:44. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "fields",
+      "name": "red",
+      "size": [
+        400,
+        260
+      ],
+      "subject": "very simple ancient warrior magic domain stone floor with a single crimson carved emblem and sparse ember petals; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13",
+      "path": "assets/fields/red.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game fields image for 双生纹. Subject: very simple ancient warrior magic domain stone floor with a single crimson carved emblem and sparse ember petals; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "fields",
+      "name": "green",
+      "size": [
+        400,
+        260
+      ],
+      "subject": "very simple ancient guardian magic domain stone floor with a single jade green carved emblem and sparse root outlines; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13",
+      "path": "assets/fields/green.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game fields image for 双生纹. Subject: very simple ancient guardian magic domain stone floor with a single jade green carved emblem and sparse root outlines; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
+    },
+    {
+      "kind": "fields",
+      "name": "blue",
+      "size": [
+        400,
+        260
+      ],
+      "subject": "very simple ancient sage magic domain stone floor with a single indigo blue carved emblem and sparse star marks; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13",
+      "path": "assets/fields/blue.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE production game fields image for 双生纹. Subject: very simple ancient sage magic domain stone floor with a single indigo blue carved emblem and sparse star marks; quiet dark muted background, centered horizontally, no figures, no writing. Landscape 20:13. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Simple line art + flat color, readable and calm, no dense ornamental detail.",
+      "status": "pending"
     }
   ]
 }
