@@ -1,0 +1,679 @@
+{
+  "theme": "ancient folklore, simple 2D anime ink outlines and flat cel colors",
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "kind": "beasts",
+      "name": "灵雀",
+      "subject": "a tiny spirit sparrow made of smoke and stone, curious eyes, fragile, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/灵雀.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a tiny spirit sparrow made of smoke and stone, curious eyes, fragile, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "complete"
+    },
+    {
+      "kind": "beasts",
+      "name": "石龟",
+      "subject": "a small stone turtle spirit with a mossy shell, calm and sturdy, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/石龟.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a small stone turtle spirit with a mossy shell, calm and sturdy, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "铁甲虫",
+      "subject": "an armored iron beetle spirit with heavy overlapping plates, slow but tough, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/铁甲虫.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: an armored iron beetle spirit with heavy overlapping plates, slow but tough, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "疾狐",
+      "subject": "a lean swift fox spirit mid-leap, sharp ears, wispy tail, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/疾狐.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a lean swift fox spirit mid-leap, sharp ears, wispy tail, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "苍狼",
+      "subject": "a grey spirit wolf standing alert, balanced and loyal, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/苍狼.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a grey spirit wolf standing alert, balanced and loyal, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "棕熊",
+      "subject": "a large brown spirit bear, thick fur, protective stance, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/棕熊.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a large brown spirit bear, thick fur, protective stance, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "赤隼",
+      "subject": "a crimson falcon spirit diving with razor talons, aggressive, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/赤隼.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a crimson falcon spirit diving with razor talons, aggressive, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "猎豹",
+      "subject": "a sleek hunting leopard spirit crouched to pounce, predatory focus, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/猎豹.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a sleek hunting leopard spirit crouched to pounce, predatory focus, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "beasts",
+      "name": "雷虎",
+      "subject": "a massive thunder tiger spirit, crackling lightning in its stripes, terrifying presence, full body, transparent background",
+      "transparent": true,
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/beasts/雷虎.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square beasts game illustration for 双生纹. Subject: a massive thunder tiger spirit, crackling lightning in its stripes, terrifying presence, full body, transparent background. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Full body including limbs and tail, centered with safe padding, true transparent background; absolutely no runes or sigils on body (game overlays them). Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "heroes",
+      "name": "warrior",
+      "subject": "portrait of an ancient wandering warrior with a worn crimson cloak, old bronze armor and sword, determined kind eyes, dark hair, chest-up",
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/heroes/warrior.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square heroes game illustration for 双生纹. Subject: portrait of an ancient wandering warrior with a worn crimson cloak, old bronze armor and sword, determined kind eyes, dark hair, chest-up. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "heroes",
+      "name": "archmage",
+      "subject": "portrait of an ancient sage in indigo linen robes, holding a small blue charm stone, calm eyes, chest-up; no technological clothes",
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/heroes/archmage.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square heroes game illustration for 双生纹. Subject: portrait of an ancient sage in indigo linen robes, holding a small blue charm stone, calm eyes, chest-up; no technological clothes. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "heroes",
+      "name": "guardian",
+      "subject": "portrait of an ancient guardian with a moss-green cloak and old wooden tower shield with jade inlay, steadfast gentle eyes, chest-up",
+      "size": [
+        512,
+        512
+      ],
+      "path": "assets/heroes/guardian.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE square heroes game illustration for 双生纹. Subject: portrait of an ancient guardian with a moss-green cloak and old wooden tower shield with jade inlay, steadfast gentle eyes, chest-up. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Square 1:1 composition. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "迅斩",
+      "color": "红",
+      "subject": "a blade cutting through the air in a single flash, motion streak",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/迅斩.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blade cutting through the air in a single flash, motion streak. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "战吼",
+      "color": "红",
+      "subject": "a warrior roaring, shockwave of red light bursting outward",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/战吼.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a warrior roaring, shockwave of red light bursting outward. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "试锋",
+      "color": "红",
+      "subject": "a sword being drawn from its sheath, a thin red sigil running along the edge",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/试锋.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a sword being drawn from its sheath, a thin red sigil running along the edge. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "裂风",
+      "color": "红",
+      "subject": "wind torn apart by a sweeping slash, red crescent trail",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/裂风.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: wind torn apart by a sweeping slash, red crescent trail. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "斩兽",
+      "color": "红",
+      "subject": "a greatsword cleaving a shadowy beast silhouette",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/斩兽.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a greatsword cleaving a shadowy beast silhouette. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "碎域",
+      "color": "红",
+      "subject": "a glowing rune circle on the ground shattering into shards",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/碎域.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a glowing rune circle on the ground shattering into shards. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "烈斩",
+      "color": "红",
+      "subject": "a flaming sword strike, embers scattering",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/烈斩.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a flaming sword strike, embers scattering. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "破甲",
+      "color": "红",
+      "subject": "a spear piercing through a cracked metal shield",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/破甲.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a spear piercing through a cracked metal shield. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "战意",
+      "color": "红",
+      "subject": "a clenched gauntlet wrapped in burning red sigils",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/战意.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a clenched gauntlet wrapped in burning red sigils. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "蓄势",
+      "color": "红",
+      "subject": "a warrior crouched, gathering red energy into a drawn-back fist",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/蓄势.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a warrior crouched, gathering red energy into a drawn-back fist. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "狂怒",
+      "color": "红",
+      "subject": "berserker eyes glowing red, veins of fire across the skin",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/狂怒.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: berserker eyes glowing red, veins of fire across the skin. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "重锤",
+      "color": "红",
+      "subject": "a giant warhammer smashing down, ground cracking",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/重锤.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a giant warhammer smashing down, ground cracking. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "连击",
+      "color": "红",
+      "subject": "two afterimages of the same sword slash crossing",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/连击.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: two afterimages of the same sword slash crossing. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple crimson and ember accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "薄盾",
+      "color": "绿",
+      "subject": "a thin translucent green barrier shimmering",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/薄盾.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a thin translucent green barrier shimmering. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "生机",
+      "color": "绿",
+      "subject": "a small green sprout glowing in cupped hands",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/生机.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a small green sprout glowing in cupped hands. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "木盾",
+      "color": "绿",
+      "subject": "a wooden round shield with green leaf sigils",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/木盾.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a wooden round shield with green leaf sigils. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "青藤",
+      "color": "绿",
+      "subject": "green vines wrapping protectively around an arm",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/青藤.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: green vines wrapping protectively around an arm. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "庇护",
+      "color": "绿",
+      "subject": "a dome of green light sheltering a small beast",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/庇护.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a dome of green light sheltering a small beast. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "守望",
+      "color": "绿",
+      "subject": "a sentinel standing on a wall at dusk, green lantern",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/守望.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a sentinel standing on a wall at dusk, green lantern. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "铁盾",
+      "color": "绿",
+      "subject": "a heavy iron kite shield, green runes along the rim",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/铁盾.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a heavy iron kite shield, green runes along the rim. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "疗伤",
+      "color": "绿",
+      "subject": "green light knitting a wound closed",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/疗伤.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: green light knitting a wound closed. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "坚守",
+      "color": "绿",
+      "subject": "a shield planted firmly in the ground, roots growing from it",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/坚守.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a shield planted firmly in the ground, roots growing from it. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "荆棘",
+      "color": "绿",
+      "subject": "a shield covered in glowing green thorns",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/荆棘.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a shield covered in glowing green thorns. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "重铠",
+      "color": "绿",
+      "subject": "full plate armor standing empty, green sigils on the chestplate",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/重铠.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: full plate armor standing empty, green sigils on the chestplate. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "甘霖",
+      "color": "绿",
+      "subject": "soft green rain falling from a clear sky",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/甘霖.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: soft green rain falling from a clear sky. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "磐石",
+      "color": "绿",
+      "subject": "a massive boulder engraved with green runes, unmovable",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/磐石.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a massive boulder engraved with green runes, unmovable. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple jade and moss green accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "灵感",
+      "color": "蓝",
+      "subject": "two glowing blue cards appearing from thin air above an open palm",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/灵感.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: two glowing blue cards appearing from thin air above an open palm. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "召唤术",
+      "color": "蓝",
+      "subject": "a blue summoning circle with a beast silhouette emerging",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/召唤术.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blue summoning circle with a beast silhouette emerging. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "奥术飞弹",
+      "color": "蓝",
+      "subject": "three blue arcane missiles streaking toward a target",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/奥术飞弹.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: three blue arcane missiles streaking toward a target. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "燃魂",
+      "color": "蓝",
+      "subject": "a soul-shaped blue flame clinging to a figure",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/燃魂.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a soul-shaped blue flame clinging to a figure. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "法力回流",
+      "color": "蓝",
+      "subject": "blue mana flowing back into a crystal like a reversed waterfall",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/法力回流.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: blue mana flowing back into a crystal like a reversed waterfall. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "混沌",
+      "color": "蓝",
+      "subject": "a swirling sphere of unstable blue and violet energy",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/混沌.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a swirling sphere of unstable blue and violet energy. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "驱散",
+      "color": "蓝",
+      "subject": "a blue wave dissolving a glowing shield into particles",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/驱散.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blue wave dissolving a glowing shield into particles. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "洞察",
+      "color": "蓝",
+      "subject": "a single blue eye opening in a rune circle, seeing through a face-down card",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/洞察.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a single blue eye opening in a rune circle, seeing through a face-down card. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "免伤符",
+      "color": "蓝",
+      "subject": "a blue talisman paper hovering over a glowing floor rune",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/免伤符.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blue talisman paper hovering over a glowing floor rune. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "加固符",
+      "color": "蓝",
+      "subject": "blue sigil braces locking around a rune circle on the ground",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/加固符.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: blue sigil braces locking around a rune circle on the ground. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "秘法盾",
+      "color": "蓝",
+      "subject": "a hexagonal blue arcane shield made of circuitry-like lines",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/秘法盾.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a hexagonal blue arcane shield made of circuitry-like lines. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "封印",
+      "color": "蓝",
+      "subject": "blue chains of runes binding a snarling beast",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/封印.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: blue chains of runes binding a snarling beast. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "魔力风暴",
+      "color": "蓝",
+      "subject": "a storm of blue lightning and runes sweeping across a battlefield",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/魔力风暴.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a storm of blue lightning and runes sweeping across a battlefield. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    },
+    {
+      "kind": "cards",
+      "name": "破法",
+      "color": "蓝",
+      "subject": "a blue hand crushing a face-down card into fragments",
+      "size": [
+        400,
+        260
+      ],
+      "path": "assets/cards/破法.png",
+      "prompt": "Use case: stylized-concept. Asset: ONE horizontal card illustration for 双生纹. Subject: a blue hand crushing a face-down card into fragments. Style: Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark. Very simple background with large quiet color shapes, centered subject readable as a thumbnail. Landscape 20:13 composition, simple indigo and cobalt blue accents and modest ancient sigils appropriate to the subject, primary action fits within middle 80% of canvas. Keep ancient legend mood but extremely simple anime line-and-fill, not a detailed fantasy painting.",
+      "status": "pending"
+    }
+  ]
+}

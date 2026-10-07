@@ -14,12 +14,10 @@
 为了 40 张卡和 9 种纹兽看起来是一套，所有提示词末尾都加上这段风格描述：
 
 ```
-dark fantasy card game art, glowing runic line engravings ("sigils") etched into the subject,
-ink-black background, strong rim light, limited palette, clean silhouette, centered composition,
-painterly, high detail, no text, no border, no watermark
+Ancient folklore legend Japanese hand-drawn 2D anime cel art: clean dark brown contour lines, simple flat muted color fills, only one restrained cel-shadow tone, warm nostalgic atmosphere, archaic bronze, wood, stone and linen where appropriate. Strong readable silhouette, very sparse details, no painterly or watercolor texture, no 3D, no photorealism, no intricate glow, no text, no lettering, no watermark.
 ```
 
-颜色对应：红纹用 `crimson and ember orange glowing lines`，绿纹用 `jade green glowing lines`，蓝纹用 `cobalt blue glowing lines`。
+颜色对应：红纹使用朱红与余烬橙，绿纹使用玉绿与苔绿，蓝纹使用靛蓝与水蓝。卡面采用横构图、简单背景；纹兽采用透明背景，本体不带纹路。
 
 ## 纹兽（9 种，按基础攻血）
 
@@ -43,7 +41,7 @@ painterly, high detail, no text, no border, no watermark
 | 文件 | 提示词 |
 | --- | --- |
 | `warrior.png` | `portrait of a battle-scarred warrior, crimson sigils glowing on armor and blade, determined gaze, bust shot` |
-| `archmage.png` | `portrait of an archmage, cobalt blue sigils floating around raised hand, high-tech arcane robes, calm eyes, bust shot` |
+| `archmage.png` | `portrait of an ancient sage, small blue charm stone in a raised hand, indigo linen robes, calm eyes, bust shot` |
 | `guardian.png` | `portrait of a guardian with a tower shield, jade green sigils carved into the shield, steadfast, bust shot` |
 
 ## 卡面插画（40 张）
@@ -86,7 +84,7 @@ painterly, high detail, no text, no border, no watermark
 | 洞察 | 蓝 | `a single blue eye opening in a rune circle, seeing through a face-down card` |
 | 免伤符 | 蓝 | `a blue talisman paper hovering over a glowing floor rune` |
 | 加固符 | 蓝 | `blue sigil braces locking around a rune circle on the ground` |
-| 秘法盾 | 蓝 | `a hexagonal blue arcane shield made of circuitry-like lines` |
+| 秘法盾 | 蓝 | `a hexagonal blue arcane shield made of simple ancient geometric sigil lines` |
 | 封印 | 蓝 | `blue chains of runes binding a snarling beast` |
 | 魔力风暴 | 蓝 | `a storm of blue lightning and runes sweeping across a battlefield` |
 | 破法 | 蓝 | `a blue hand crushing a face-down card into fragments` |
@@ -96,3 +94,4 @@ painterly, high detail, no text, no border, no watermark
 - 先只生成 9 种纹兽和 3 个头像（12 张），整个画面的感觉就出来了；卡面可以慢慢补。
 - 同一个工具、同一套风格描述、固定随机种子（Midjourney 的 `--seed`）生成，风格会更统一。
 - 纹兽要透明背景（PNG）。工具不支持透明的话，生成纯黑背景再用抠图工具去掉。
+

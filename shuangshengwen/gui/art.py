@@ -94,7 +94,24 @@ def asset(kind: str, name: str, size: tuple[int, int]):
         path = os.path.join(ASSETS, kind, f"{name}.png")
         if os.path.exists(path):
             try:
-                img = pygame.transform.smoothscale(pygame.image.load(path).convert_alpha(), size)
+                original = pygame.image.load(path).convert_alpha()
+                # Preserve the hand-drawn subject's proportions in every display slot.
+                if kind == "beasts":
+                    factor = min(size[0] / original.get_width(), size[1] / original.get_height())
+                    fitted = pygame.transform.smoothscale(original, (
+                        max(1, round(original.get_width() * factor)),
+                        max(1, round(original.get_height() * factor)),
+                    ))
+                    img = pygame.Surface(size, pygame.SRCALPHA)
+                    img.blit(fitted, fitted.get_rect(center=(size[0] // 2, size[1] // 2)))
+                else:
+                    factor = max(size[0] / original.get_width(), size[1] / original.get_height())
+                    fitted = pygame.transform.smoothscale(original, (
+                        max(size[0], round(original.get_width() * factor)),
+                        max(size[1], round(original.get_height() * factor)),
+                    ))
+                    img = pygame.Surface(size, pygame.SRCALPHA)
+                    img.blit(fitted, fitted.get_rect(center=(size[0] // 2, size[1] // 2)))
             except pygame.error:
                 img = None
         _images[key] = img
@@ -308,3 +325,4 @@ def draw_hero(surf, center, radius, p, selected=False, glow=False):
         shield_icon(surf, (center[0], center[1] + radius + 4), p.shield_total(), 15)
     if selected:
         pygame.draw.circle(surf, GOLD, center, radius + 9, 3)
+
