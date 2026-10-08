@@ -606,8 +606,10 @@ class Game:
         p.grave += [red, green]
         self.log(f"▶ {p.name}召唤了纹兽：{b.describe()}")
 
-    def act_evolve(self, p: Player, target: int, material: int, card: Card) -> None:
-        """献祭一只 1 级纹兽，加一张纹牌，让另一只进化。升 2 级免费，升 3 级要付费。"""
+    def evolution_cost(self, p: Player, target: int, material: int, card: Card) -> int:
+        """Validate without changing state; return the evolution's actual cost."""
+        if not (0 <= target < len(p.beasts) and 0 <= material < len(p.beasts)):
+            raise RuleError("请选择自己的纹兽位")
         t, m = p.beasts[target], p.beasts[material]
         if target == material or not isinstance(t, Beast) or not isinstance(m, Beast):
             raise RuleError("进化需要场上两只纹兽：一只进化，一只当素材")
@@ -615,13 +617,19 @@ class Game:
             raise RuleError("当素材的纹兽必须是 1 级")
         if t.level >= 3:
             raise RuleError("已经是 3 级了")
+        if card not in p.hand:
+            raise RuleError("进化需要消耗一张手牌中的纹牌")
         cost = card.cost if t.level == 2 else 0
+        if p.power < cost:
+            raise RuleError(f"升到 3 级需要 {cost} 纹力，当前只有 {p.power}")
+        return cost
+
+    def act_evolve(self, p: Player, target: int, material: int, card: Card) -> None:
+        """献祭一只 1 级纹兽，加一张纹牌，让另一只进化。升 2 级免费，升 3 级要付费。"""
+        cost = self.evolution_cost(p, target, material, card)
+        t, m = p.beasts[target], p.beasts[material]
         self.take_from_hand(p, card)
-        try:
-            self.pay(p, cost)
-        except RuleError:
-            p.hand.append(card)
-            raise
+        self.pay(p, cost)
         p.grave.append(card)
         p.beasts[material] = None
         if t.level == 2:
@@ -929,3 +937,4 @@ class Game:
                 self.log("  对方防御纹是空的")
         else:
             raise ValueError(f"未知效果 {e}")
+

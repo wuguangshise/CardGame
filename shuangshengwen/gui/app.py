@@ -39,6 +39,9 @@ class Quit(Exception):
 class GUI:
     def __init__(self, seed=None, timer=True, screenshot_dir=None):
         pygame.init()
+        # Editors may run the GUI again in a process that previously called pygame.quit().
+        art._fonts.clear()
+        art._images.clear()
         pygame.display.set_caption("双生纹")
         self.screen = pygame.display.set_mode((W, H))
         self.clock = pygame.time.Clock()
@@ -47,6 +50,7 @@ class GUI:
         self.logs: list[str] = []
         self.toast = ("", 0.0)
         self.drag = None          # ("card", card) 或 ("attack", attacker)
+        self.evolve_buttons = {}
         self.mouse = (0, 0)
         self.turn_deadline = None
         self.popups = []          # [x, y, text, color, born]
@@ -134,6 +138,8 @@ class GUI:
         s = self.screen
         g = self.game
         mine = side == "me"
+        if mine:
+            self.evolve_buttons.clear()
         t = time.time()
         for (sd, kind, i), r in self.slot_rects.items():
             if sd != side:
@@ -167,6 +173,12 @@ class GUI:
                     sel = self.drag and self.drag[0] == "attack" and self.drag[1] == i and mine
                     art.draw_beast(s, r, b, p.beast_atk(b), selected=sel, can_attack=can)
                     self.track_hp(b, r.center)
+                    if mine and b.level < 3:
+                        button = pygame.Rect(r.left + 4, r.top + 4, 54, 22)
+                        self.evolve_buttons[i] = button
+                        pygame.draw.rect(s, (58, 67, 45), button, border_radius=5)
+                        pygame.draw.rect(s, GOLD, button, 1, border_radius=5)
+                        art.text(s, "升级", button.center, 12, GOLD, center=True, bold=True)
                 elif isinstance(b, Pending):
                     pygame.draw.ellipse(s, (30, 32, 46), r)
                     art.draw_card_back(s, pygame.Rect(r.centerx - 30, r.top + 14, 60, 84), "1/2")
@@ -258,7 +270,7 @@ class GUI:
         pygame.draw.rect(s, (60, 30, 40) if hot else (40, 26, 34), r, border_radius=10)
         pygame.draw.rect(s, DANGER, r, 2, border_radius=10)
         art.sigil_pattern(s, r.inflate(-16, -30), (255, 120, 110), 99, density=3, width=1, alpha=150)
-        art.text(s, "献祭", (r.centerx, r.bottom - 14), 14, INK, center=True, bold=True)
+        art.text(s, "弃牌献祭", (r.centerx, r.bottom - 14), 14, INK, center=True, bold=True)
         art.text(s, "+1 纹力", (r.centerx, r.top + 12), 11, DIM, center=True)
         # 结束回合
         my_turn = g.players[g.current] is me
@@ -333,14 +345,14 @@ class GUI:
         if slot:
             kind, i = slot
             if kind == "beast":
-                return "进化这只纹兽" if isinstance(me.beasts[i], Beast) else "放入纹兽位（召唤）"
+                return "升级：消耗此牌和另一只1级纹兽" if isinstance(me.beasts[i], Beast) else "放入纹兽位（召唤）"
             if isinstance(me.fields[i], Field) and card.color == BLUE:
                 return "续命 / 覆盖纹域"
             return "放入纹域位"
         if self.my_def.collidepoint(pos):
             return "盖到防御纹"
         if self.altar.collidepoint(pos):
-            return "献祭（+1 纹力）"
+            return "弃牌献祭（+1纹力，不是纹兽升级）"
         if self.play_zone.collidepoint(pos) and pos[1] < H - 170:
             return "打出"
         return None
@@ -357,7 +369,7 @@ class GUI:
             kind, i = slot
             if kind == "beast":
                 if isinstance(me.beasts[i], Beast):
-                    g.act_evolve(me, i, 1 - i, card)
+                    self.choose_evolution(i, card=card)
                 else:
                     g.act_beast_card(me, card, i)
             else:
@@ -378,6 +390,12 @@ class GUI:
             g.act_play(me, card)
 
     def drop_attack(self, attacker, pos) -> None:
+        own_slot = self.hit_slot("me", pos)
+        if attacker is not None and own_slot and own_slot[0] == "beast":
+            target = own_slot[1]
+            if target != attacker and isinstance(self.me.beasts[target], Beast):
+                self.choose_evolution(target, material=attacker)
+                return
         foe = self.game.opp(self.me)
         if math.dist(pos, self.enemy_hero) <= self.hero_r + 10:
             self.game.act_attack(self.me, attacker, ("hero",))
@@ -411,7 +429,7 @@ class GUI:
                         return
                     self.press(e.pos)
                 if e.type == pygame.MOUSEBUTTONDOWN and e.button == 3:
-                    self.drag = None
+                    self.right_click(e.pos)
                 if e.type == pygame.MOUSEBUTTONUP and e.button == 1 and self.drag:
                     self.release(e.pos)
             self.mouse = pygame.mouse.get_pos()
@@ -427,6 +445,10 @@ class GUI:
         if math.dist(pos, self.my_hero) <= self.hero_r:
             self.drag = ("attack", None)
             return
+        for target, button in self.evolve_buttons.items():
+            if button.collidepoint(pos):
+                self.act(self.choose_evolution, target)
+                return
         slot = self.hit_slot("me", pos)
         if slot and slot[0] == "beast" and isinstance(me.beasts[slot[1]], Beast):
             self.drag = ("attack", slot[1])
@@ -444,6 +466,56 @@ class GUI:
         else:
             self.act(self.drop_attack, obj, pos)
 
+    def right_click(self, pos):
+        if self.drag:
+            self.drag = None
+            return
+        slot = self.hit_slot("me", pos)
+        if slot and slot[0] == "beast" and isinstance(self.me.beasts[slot[1]], Beast):
+            self.act(self.choose_evolution, slot[1])
+
+    def choose_evolution(self, target: int, card=None, material=None):
+        """Pick a rune card/material, then explicitly confirm the sacrifice."""
+        g, me = self.game, self.me
+        survivor = me.beasts[target]
+        if not isinstance(survivor, Beast):
+            raise RuleError("请先选择要升级的纹兽")
+        if survivor.level >= 3:
+            raise RuleError("这只纹兽已经是3级，不能继续升级")
+        materials = [i for i, beast in enumerate(me.beasts)
+                     if i != target and isinstance(beast, Beast) and beast.level == 1]
+        if material is not None and material not in materials:
+            raise RuleError("献祭素材必须是另一只1级纹兽")
+        if not materials:
+            raise RuleError("升级需要另一只1级纹兽：先在空位用红牌＋绿牌召唤。弃牌献祭台不能升级纹兽。")
+        if material is None:
+            if len(materials) == 1:
+                material = materials[0]
+            else:
+                options = [f"献祭 {me.beasts[i].describe()}" for i in materials] + ["取消"]
+                choice = self.modal("选择要献祭的1级纹兽（不会保留）", options)
+                if choice == len(materials):
+                    return
+                material = materials[choice]
+        if card is None:
+            cards = [c for c in me.hand if survivor.level == 1 or c.cost <= me.power]
+            if not cards:
+                raise RuleError("没有可用纹牌：升级需要一张手牌；升3级还需支付这张牌的原价纹力。")
+            options = [f"{c.name} · {0 if survivor.level == 1 else c.cost}纹力" for c in cards] + ["取消"]
+            prompt = f"给{survivor.name}升到{survivor.level + 1}级：选择要消耗的纹牌（2级免费，3级付原价）"
+            choice = self.modal(prompt, options, cards=cards)
+            if choice == len(cards):
+                return
+            card = cards[choice]
+        cost = g.evolution_cost(me, target, material, card)
+        sacrificed = me.beasts[material]
+        prompt = (f"保留{survivor.name}并升到{survivor.level + 1}级；献祭{sacrificed.name}（会消失），"
+                  f"消耗【{card.name}】和{cost}纹力。确认升级？")
+        if self.modal(prompt, ["确认献祭并升级", "取消"]) != 0:
+            return
+        g.act_evolve(me, target, material, card)
+        self.say(f"{survivor.name}已升到{survivor.level}级", OK)
+
     def act(self, fn, *args):
         paused = self.turn_deadline - time.time() if self.turn_deadline else None
         try:
@@ -460,6 +532,7 @@ class GUI:
         deadline = time.time() + timeout if timeout else None
         saved = self.turn_deadline
         buttons = []
+        cancel_index = options.index("取消") if "取消" in options else None
 
         def overlay():
             nonlocal buttons
@@ -467,7 +540,8 @@ class GUI:
             shade = pygame.Surface((W, H), pygame.SRCALPHA)
             shade.fill((0, 0, 0, 160))
             s.blit(shade, (0, 0))
-            art.text(s, prompt, (W // 2, 150), 22, GOLD, center=True, bold=True)
+            for line_index, line in enumerate(art.wrap(prompt, 22, W - 100)):
+                art.text(s, line, (W // 2, 100 + 26 * line_index), 22, GOLD, center=True, bold=True)
             if deadline:
                 left = max(0, deadline - time.time())
                 art.text(s, f"{left:0.1f} 秒后默认选第一项", (W // 2, 182), 15, DANGER, center=True)
@@ -480,6 +554,14 @@ class GUI:
                     r = pygame.Rect(x0 + i * gap, 240, CARD_W, CARD_H)
                     hot = r.collidepoint(self.mouse)
                     art.draw_card(s, c, r.topleft, highlight=GOLD if hot else None)
+                    buttons.append(r)
+                    if len(options) > n:
+                        art.text(s, options[i], (r.centerx, r.bottom + 16), 12, GOLD, center=True)
+                for i, option in enumerate(options[n:]):
+                    r = pygame.Rect(W // 2 - 150, 460 + i * 54, 300, 42)
+                    pygame.draw.rect(s, (44, 46, 66), r, border_radius=8)
+                    pygame.draw.rect(s, GOLD, r, 1, border_radius=8)
+                    art.text(s, option, r.center, 17, INK, center=True)
                     buttons.append(r)
             else:
                 y = 220
@@ -498,6 +580,11 @@ class GUI:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
                     raise Quit
+                if cancel_index is not None and (
+                    (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE)
+                    or (e.type == pygame.MOUSEBUTTONDOWN and e.button == 3)
+                ):
+                    return cancel_index
                 if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                     for i, r in enumerate(buttons):
                         if r.collidepoint(e.pos):

@@ -9,6 +9,26 @@ Copyright © 2026 Jesse. All rights reserved.
 
 需要 Python 3.10 或更新版本。
 
+### Windows / Conda / 编辑器启动
+
+```bash
+conda create -n cardgame python=3.12 -y
+conda activate cardgame
+python -m pip install -r requirements.txt
+python start.py                 # 默认图形版
+python start.py --cli           # 命令行版
+python start.py --check         # 查看实际 Python 路径并检查依赖
+```
+
+Windows 推荐双击 `start_game.bat`（图形版）或 `start_cli.bat`（命令行版）。
+脚本会切换到游戏目录；检测到 conda 时使用 `cardgame` 环境，否则使用系统 Python。
+运行结束或报错后窗口会保留。`play.py` 是纯命令行版，`play_gui.py` 是图形版，旧启动命令继续可用。
+不要只拷贝一个 play 文件：需要保留 `shuangshengwen/` 和 `assets/` 等完整目录。
+
+VS Code / PyCharm 请选择 `cardgame` 环境的 Python，直接运行 `start.py` 或 `play_gui.py`。
+命令行版需要可交互终端，不适合禁止标准输入的输出面板。
+未捕获的错误会显示当前 Python 和依赖安装指令，并记录到 `logs/startup_error.log`（目录不可写时保存到系统临时目录）。
+
 ### 图形版（推荐）
 
 ```bash
@@ -24,14 +44,17 @@ python3 play_gui.py --no-timer     # 关掉每回合 30 秒计时
 | 打出一张牌 | 把手牌拖到场地中间 |
 | 合纹 | 把附加卡拖到主卡上（手牌里的另一张） |
 | 召唤纹兽 | 把红牌、绿牌先后拖到同一个纹兽位 |
-| 进化纹兽 | 把纹牌拖到要进化的纹兽身上（另一只 1 级纹兽当素材） |
+| 进化纹兽 | 点纹兽左上角「升级」或右键纹兽，选择纹牌并确认献祭；也可把素材纹兽拖到保留的纹兽上，或把纹牌拖到目标纹兽上 |
 | 铺纹域 | 把牌拖到纹域位；蓝牌拖到已生效的纹域上可以选续命 |
 | 防御纹 | 把牌拖到防御纹盖牌；点击防御纹翻开 |
-| 献祭 | 把牌拖到「献祭」台 |
+| 弃牌献祭 | 把手牌拖到「弃牌献祭」台，只获得 +1 纹力，不升级纹兽 |
 | 攻击 | 从自己的角色或纹兽按住拖出箭头，松开在敌方角色、纹兽或纹域上 |
 | 结束回合 | 点「结束回合」或按空格 |
 
 对方攻击时会弹出 8 秒判定，8 秒内不选就默认「都不用」。右键取消拖动。
+
+纹兽升级必须有两只纹兽，其中献祭素材必须是1级。1→2级消耗纹牌但不扣纹力；2→3级需要再次召唤一只1级素材，并支付纹牌原价。
+确认窗口会注明保留谁、献祭谁、消耗哪张牌及费用；取消或费用不足不会消耗卡牌、素材或纹力。
 
 ### 命令行版（不用装 pygame）
 

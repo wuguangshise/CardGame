@@ -7,6 +7,10 @@
 
 import argparse
 
+if __name__ == "__main__":
+    from startup import prepare_environment
+    prepare_environment()
+
 from shuangshengwen.ai import AIController
 from shuangshengwen.cards import COLOR_NAME
 from shuangshengwen.engine import (
@@ -210,5 +214,10 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (KeyboardInterrupt, EOFError):
+    except KeyboardInterrupt:
         print("\n已退出")
+    except EOFError:
+        print("\n当前控制台没有可用输入。请在终端运行 python play.py，或双击 start_game.bat 运行图形版。")
+    from startup import pause_if_double_clicked
+    pause_if_double_clicked()
+
