@@ -71,7 +71,7 @@ class EvolutionGUI(unittest.TestCase):
         except ImportError:
             self.skipTest('pygame not installed')
         from shuangshengwen.gui.app import GUI
-        self.gui = GUI(seed=4, timer=False)
+        self.gui = GUI(seed=4, timer=False, animations=False)
         self.game, self.player, self.card = fixture()
         self.gui.game, self.gui.me = self.game, self.player
         self.gui.modal = Mock(return_value=0)

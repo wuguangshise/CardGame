@@ -10,7 +10,7 @@ import copy
 import random
 
 from .cards import GREEN, RED
-from .engine import Beast, Controller, Field, Game, GameOver, Pending, Player, RuleError
+from .engine import Beast, Controller, Field, Game, GameOver, Pending, Player, RuleError, penetrating_amount
 
 DAMAGE = {"damage", "burn", "storm", "field_damage"}
 
@@ -143,10 +143,10 @@ class AIController(Controller):
     WEAK_MISTAKE = 0.45
     BEAM = 6
 
-    def __init__(self, think: bool = True, level: str = "normal"):
+    def __init__(self, think: bool = True, level: str = "normal", seed=None):
         self.think = think
         self.level = level
-        self._rng = random.Random()
+        self._rng = random.Random(seed)
 
     # ---------- 各种选择（防守、目标等）----------
     def choose(self, game: Game, me: Player, kind: str, prompt: str, options: list[str]) -> int:
@@ -168,6 +168,9 @@ class AIController(Controller):
             return 0
         if kind == "target_own_beast":
             mine = me.live_beasts()
+            if game.defense_context and game.defense_context["target"][0] == "beast":
+                target_slot = game.defense_context["target"][1]
+                return next(k for k, (slot, _) in enumerate(mine) if slot == target_slot)
             return max(range(len(mine)), key=lambda k: mine[k][1].atk + mine[k][1].level)
         if kind == "target_enemy_beast":
             theirs = foe.live_beasts()
@@ -177,23 +180,39 @@ class AIController(Controller):
     def _defense(self, game, me, prompt, options) -> int:
         digits = "".join(ch for ch in prompt.split("造成")[-1] if ch.isdigit())
         dmg = int(digits or 0)
-        incoming = dmg - me.shield_total()
+        context = game.defense_context or {"target": ("hero",), "damage": dmg, "pierce": "无视护盾" in prompt}
+        hero = context["target"][0] == "hero"
+        victim = me if hero else me.beasts[context["target"][1]]
+        dmg = context["damage"] * (2 if hero and me.deck_empty else 1)
+        pierce = context["pierce"]
+        penetrating = penetrating_amount(dmg, pierce)
+        incoming = penetrating + max(0, dmg-penetrating-victim.shield_total())
         if incoming <= 0:
             return 0
-        best, best_cost = 0, incoming * (1.6 if me.hp - incoming <= 5 else 1.0)
+        best, best_cost = 0, incoming * (1.6 if hero and me.hp - incoming <= 5 else 1.0)
         for k, opt in enumerate(options):
             if opt.startswith("让"):
                 for _, b in me.live_beasts():
                     if b.describe() in opt:
-                        loss = min(dmg, b.hp + b.shield_total())
-                        dies = dmg >= b.hp + b.shield_total()
+                        # Redirected hits do not inherit hero-only deck-out doubling.
+                        redirected = context["damage"]
+                        bypass = penetrating_amount(redirected, pierce)
+                        loss = min(b.hp, bypass+max(0, redirected-bypass-b.shield_total()))
+                        dies = loss >= b.hp
                         cost = (b.atk + b.hp * 0.6 if dies else loss * 0.4)
                         if cost < best_cost:
                             best, best_cost = k, cost
             elif opt.startswith("紧急举盾") and me.defense is not None:
                 pay = 2 * me.defense_cost() * 0.3 + 1.0
-                gain = me.defense.params.get("amount", 0) if me.defense.effect == "shield" else 0
-                if me.defense.color == GREEN and gain:
+                gain = me.defense.params.get("amount", 0) if hero and me.defense.effect == "shield" and pierce is not True else 0
+                if not hero and me.defense.effect == "beast_shield" and pierce is not True:
+                    gain = me.defense.params.get("amount", 0)
+                gain = min(gain, max(0, dmg-penetrating-victim.shield_total()))
+                if hero and me.defense.effect == "heal":
+                    gain = min(15-me.hp, me.defense.params.get("amount", 0))
+                    if pierce is not True:
+                        gain += min(me.defense.params.get("shield", 0), max(0, dmg-penetrating-victim.shield_total()))
+                if gain:
                     cost = max(0, incoming - gain) + pay
                     if cost < best_cost:
                         best, best_cost = k, cost
@@ -220,6 +239,8 @@ class AIController(Controller):
         sim = AIController(think=False)
         memo = {id(c): sim for c in game.ctrl}
         memo[id(game.log)] = _noop
+        if game.events:
+            memo[id(game.events)] = _noop
         g2 = copy.deepcopy(game, memo)
         g2.log = _noop
         g2.rng = random.Random(self._rng.random())

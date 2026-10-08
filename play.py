@@ -12,7 +12,7 @@ if __name__ == "__main__":
     prepare_environment()
 
 from shuangshengwen.ai import AIController
-from shuangshengwen.cards import COLOR_NAME
+from shuangshengwen.cards import COLOR_NAME, read_deck
 from shuangshengwen.engine import (
     CLASSES, Beast, Controller, Field, Game, Pending, Player, RuleError,
 )
@@ -199,13 +199,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int)
     ap.add_argument("--hotseat", action="store_true", help="两个人轮流操作")
+    ap.add_argument("--advanced", action="store_true", help="启用抢先手和亮牌禁牌")
+    ap.add_argument("--deck", help="玩家一的自定义套牌JSON文件")
     a = ap.parse_args()
+    try:
+        deck = read_deck(a.deck) if a.deck else None
+    except (OSError, ValueError) as error:
+        ap.error(str(error))
 
     print("《双生纹》测试版 —— 规则见 README.md")
     if a.hotseat:
-        game = Game(("玩家一", "玩家二"), (HumanController(), HumanController()), seed=a.seed)
+        game = Game(("玩家一", "玩家二"), (HumanController(), HumanController()), seed=a.seed, advanced=a.advanced, decks=(deck, None))
     else:
-        game = Game(("你", "人机"), (HumanController(), AIController()), seed=a.seed)
+        game = Game(("你", "人机"), (HumanController(), AIController(seed=a.seed)), seed=a.seed, advanced=a.advanced, decks=(deck, None))
     w = game.play()
     print("\n" + "=" * 60)
     print(f"游戏结束：{w.name}获胜！" if w else "游戏结束：平局")

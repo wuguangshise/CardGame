@@ -8,6 +8,8 @@
 
 import argparse
 import itertools
+import json
+import statistics
 from collections import Counter
 from multiprocessing import Pool, cpu_count
 
@@ -15,20 +17,20 @@ CLASSES = ["warrior", "archmage", "guardian"]
 
 
 def one_game(args):
-    a, b, seed = args
+    a, b, seed, level, advanced = args
     from shuangshengwen.ai import AIController
     from shuangshengwen.engine import Game
-    g = Game(("甲", "乙"), (AIController(), AIController()), seed=seed, log=lambda *x: None, classes=(a, b))
+    g = Game(("甲", "乙"), (AIController(level=level, seed=seed*2), AIController(level=level, seed=seed*2+1)), seed=seed, log=lambda *x: None, classes=(a, b), advanced=advanced)
     w = g.play()
-    return a, b, (w.cls if w else None), (w.is_first if w else None), sum(p.turns for p in g.players)
+    return a, b, (w.cls if w else None), (w.is_first if w else None), sum(p.turns for p in g.players), g.stats
 
 
 def skill_game(args):
     cls, level, foe, seat, seed = args
     from shuangshengwen.ai import AIController
     from shuangshengwen.engine import Game
-    ctrls = [AIController(), AIController()]
-    ctrls[seat] = AIController(level=level)
+    ctrls = [AIController(seed=seed*2), AIController(seed=seed*2+1)]
+    ctrls[seat] = AIController(level=level, seed=seed*2+seat+17)
     classes = [foe, foe]
     classes[seat] = cls
     g = Game(("甲", "乙"), tuple(ctrls), seed=seed, log=lambda *x: None, classes=tuple(classes))
@@ -41,7 +43,7 @@ def run_skill(per_pair: int, only: list[str]) -> None:
     jobs = [(c, lv, f, seat, k * 31 + seat * 7 + 3)
             for c in only for lv in ("weak", "strong") for f in CLASSES for seat in (0, 1)
             for k in range(per_pair)]
-    with Pool(max(1, cpu_count())) as pool:
+    with Pool(min(8, max(1, cpu_count()))) as pool:
         out = pool.map(skill_game, jobs, chunksize=2)
     win, n = Counter(), Counter()
     for c, lv, w in out:
@@ -54,26 +56,40 @@ def run_skill(per_pair: int, only: list[str]) -> None:
         print(f"  {c}：新手 {lo:.0%}，高手 {hi:.0%}，差距 {hi - lo:+.0%}")
 
 
-def run(per_pair: int) -> None:
-    jobs = [(a, b, k * 13 + 7) for a, b in itertools.product(CLASSES, repeat=2) for k in range(per_pair)]
-    with Pool(max(1, cpu_count())) as pool:
-        out = pool.map(one_game, jobs, chunksize=4)
-    res, games, first, turns = Counter(), Counter(), Counter(), []
-    for a, b, w, f, t in out:
+def run(per_pair: int, level="normal", seed=7, advanced=False, workers=None, output=None) -> dict:
+    jobs = [(a, b, k * 13 + seed, level, advanced)
+            for a, b in itertools.product(CLASSES, repeat=2) for k in range(per_pair)]
+    with Pool(workers or min(8, max(1, cpu_count()))) as pool:
+        out = pool.map(one_game, jobs, chunksize=2)
+    res, games, first, turns, actions = Counter(), Counter(), Counter(), [], Counter()
+    for a, b, w, f, t, stats in out:
         turns.append(t)
+        actions.update(stats)
         if w is None:
             continue
         games[(a, b)] += 1
         res[(a, b, w)] += 1
         first[f] += 1
-    print(f"共 {len(out)} 局")
+    report = {"games": len(out), "seed": seed, "ai": level, "advanced": advanced,
+              "matchups": {}, "actions_per_game": {k: v / len(out) for k, v in actions.items()}}
+    print(f"共 {len(out)} 局，{level}人机，seed={seed}，{'进阶' if advanced else '新手'}模式")
     for a, b in itertools.combinations(CLASSES, 2):
         n = games[(a, b)] + games[(b, a)]
         wa = res[(a, b, a)] + res[(b, a, a)]
-        print(f"  {a} 对 {b}：{a} 胜率 {wa / n:.0%}（{n} 局）")
+        rate = wa/n if n else None
+        report["matchups"][f"{a}/{b}"] = {"wins": wa, "decided": n, "rate": rate}
+        print(f"  {a} 对 {b}：{a} 胜率 {rate:.1%}（{n} 局）" if n else f"  {a} 对 {b}：无完成对局")
     done = first[True] + first[False]
-    print(f"先手胜率：{first[True] / done:.0%}")
-    print(f"平均每人回合数：{sum(turns) / len(turns) / 2:.1f}，超时局：{len(out) - done}")
+    report.update(first_winrate=first[True]/done if done else None,
+                  mean_rounds=statistics.mean(turns)/2, median_rounds=statistics.median(turns)/2,
+                  timeouts=len(out)-done)
+    print(f"先手胜率：{report['first_winrate']:.1%}" if done else "没有完成对局")
+    print(f"平均每人回合数：{report['mean_rounds']:.1f}，超时局：{report['timeouts']}")
+    print("每局行动均值：" + "，".join(f"{k}={v:.2f}" for k, v in report["actions_per_game"].items()))
+    if output:
+        with open(output, "w", encoding="utf-8") as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+    return report
 
 
 def show_one() -> None:
@@ -90,5 +106,12 @@ if __name__ == "__main__":
     ap.add_argument("--log", action="store_true", help="打印一局的完整过程")
     ap.add_argument("--skill", action="store_true", help="测各职业的上下限")
     ap.add_argument("--only", nargs="*", default=CLASSES, help="只测这些职业的上下限")
+    ap.add_argument("--level", choices=["normal", "strong", "weak"], default="normal")
+    ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--advanced", action="store_true")
+    ap.add_argument("--workers", type=int, default=min(8, max(1, cpu_count())))
+    ap.add_argument("--json", help="保存统计JSON")
     a = ap.parse_args()
-    show_one() if a.log else run_skill(a.n, a.only) if a.skill else run(a.n)
+    if a.n < 1 or a.workers < 1:
+        ap.error("局数和worker数必须大于0")
+    show_one() if a.log else run_skill(a.n, a.only) if a.skill else run(a.n, a.level, a.seed, a.advanced, a.workers, a.json)

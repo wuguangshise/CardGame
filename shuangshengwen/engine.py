@@ -8,13 +8,15 @@ from __future__ import annotations
 
 import math
 import random as _random
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 
-from .cards import BLUE, FIELD_TYPES, FIRST, GREEN, RED, SECOND, SPECIES, Card, starter_deck
+from .cards import BLUE, FIELD_TYPES, FIRST, GREEN, RED, SECOND, SPECIES, Card, starter_deck, build_deck
 
 HERO_HP = 15
 BASE_ATK = 1
 START_POWER = 12
+TURN_POWER = 1  # 从各自第2回合开始恢复；不重置剩余纹力
 SECOND_BONUS_POWER = 1  # 后手多 1 纹力，抵消先手优势
 CLASS_BONUS_POWER = {"archmage": 1}  # 大魔导师开局多 1 纹力
 OPEN_HAND = 4
@@ -27,7 +29,7 @@ EVOLVE_BONUS = 1  # 红纹进化 +1 攻，绿纹进化 +1 血（加纹值会让 
 
 CLASSES = {
     "warrior": "红 · 战士（每回合第一张红牌 -1 费）",
-    "archmage": "蓝 · 大魔导师（法术连锁：本回合第 2 张蓝牌起 -1 费，第 2 张时对方受 3 伤害并抽 1 张）",
+    "archmage": "蓝 · 大魔导师（法术连锁：本回合第2张蓝牌起减费，最多-1；第2张时对方受1伤害）",
     "guardian": "绿 · 守护者（护盾多挡对方 1 个回合）",
 }
 
@@ -37,12 +39,20 @@ DAMAGE_EFFECTS = {"field_damage", "damage", "burn", "storm"}
 
 
 CLASS_DISCOUNT = {"warrior": RED}
-# 大魔导师「法术连锁」：本回合第 1 张蓝牌原价，之后每张比上一张多减 1 费（第 2 张 -1，第 3 张 -2……）
+# 大魔导师「法术连锁」：第1张原价，第2张起减费，减费有上限。
 CHAIN_STEP = 1
+CHAIN_DISCOUNT_CAP = 1
 CHAIN_BURST_AT = 2  # 本回合打出第 2 张蓝牌时连锁爆发
-CHAIN_BURST_DRAW = 1
+CHAIN_BURST_DRAW = 0
 CHAIN_BURST_POWER = 0  # 爆发返还的纹力
-CHAIN_BURST_DMG = 3  # 爆发对对方角色造成的伤害（无视护盾）
+CHAIN_BURST_DMG = 1  # 爆发对对方角色造成的伤害（无视护盾）
+
+
+def penetrating_amount(damage, pierce):
+    """True为完全穿透；整数为最多穿透几点，其余伤害正常被护盾吸收。"""
+    if pierce is True:
+        return damage
+    return min(damage, max(0, int(pierce)))
 
 
 class RuleError(Exception):
@@ -167,6 +177,7 @@ class Player:
     hero_attacks: int = 1
     pierce: bool = False
     vs_beast: int = 0
+    pierce_amount: int = 0
     draw_on_attack: bool = False
     extended: bool = False
     discount_used: bool = False
@@ -229,7 +240,7 @@ class GameOver(Exception):
 
 # ---------------------------------------------------------------- 对局
 class Game:
-    def __init__(self, names, controllers, seed=None, log=print, classes=None):
+    def __init__(self, names, controllers, seed=None, log=print, classes=None, events=None, advanced=False, decks=None):
         self.rng = _random.Random(seed)
         self.log = log
         self.players = [Player(n) for n in names]
@@ -237,6 +248,30 @@ class Game:
         self.current = 0
         self.winner: Player | None = None
         self.preset_classes = classes
+        self.custom_decks = decks
+        self.events = events
+        self.advanced = advanced
+        self._effect_source = None
+        self.defense_context = None
+        self.stats = {"summons": 0, "evolve2": 0, "evolve3": 0, "sacrifices": 0}
+
+    def emit(self, kind, **data):
+        """结构化表现事件；界面只展示，不能决定规则。人机试算禁用此回调。"""
+        if self.events:
+            self.events(dict(kind=kind, **data))
+
+    @contextmanager
+    def effect_source(self, source):
+        previous = self._effect_source
+        self._effect_source = source
+        try:
+            yield
+        finally:
+            self._effect_source = previous
+
+    def damage_event(self, kind, owner, target, **data):
+        source = self._effect_source or (self.opp(owner), ("hero",))
+        self.emit(kind, source=source, owner=owner, target=target, **data)
 
     # ---------- 工具 ----------
     def opp(self, p: Player) -> Player:
@@ -284,9 +319,9 @@ class Game:
         p.power -= n
 
     def card_cost(self, p: Player, card: Card) -> int:
-        """职业被动：战士每回合第一张红牌 -1 费；大魔导师法术连锁，本回合第 N 张蓝牌 -(N-1) 费。"""
+        """职业被动：战士每回合第一张红牌 -1 费；大魔导师法术连锁，本回合第2张蓝牌起减费（最多1）。"""
         if p.cls == "archmage" and card.color == BLUE:
-            return max(0, card.cost - p.chain * CHAIN_STEP)
+            return max(0, card.cost - min(CHAIN_DISCOUNT_CAP, p.chain * CHAIN_STEP))
         if CLASS_DISCOUNT.get(p.cls) == card.color and not p.discount_used:
             return max(0, card.cost - 1)
         return card.cost
@@ -296,7 +331,8 @@ class Game:
             p.chain += 1
             if p.chain == CHAIN_BURST_AT and p.turns > 1 and CHAIN_BURST_DMG:
                 self.log(f"  法术连锁爆发：对方角色受 {CHAIN_BURST_DMG} 伤害，抽 {CHAIN_BURST_DRAW} 张，返还 {CHAIN_BURST_POWER} 纹力")
-                self.hit_hero(self.opp(p), CHAIN_BURST_DMG, pierce=True)
+                with self.effect_source(self._effect_source or (p, ("card", card))):
+                    self.hit_hero(self.opp(p), CHAIN_BURST_DMG, pierce=True)
                 self.draw(p, CHAIN_BURST_DRAW)
                 p.power += CHAIN_BURST_POWER
                 self.check_end()
@@ -318,48 +354,62 @@ class Game:
             return 0
         if target.deck_empty:
             dmg *= 2
+        incoming = dmg
+        self.damage_event("strike", target, ("hero",), amount=dmg, pierce=pierce)
         thorns = any(s.thorns for s in target.shields)
-        if not pierce:
-            for s in target.shields:
-                blocked = min(s.amount, dmg)
-                s.amount -= blocked
-                dmg -= blocked
-            target.shields = [s for s in target.shields if s.amount > 0]
+        penetrating = penetrating_amount(dmg, pierce)
+        dmg -= penetrating
+        for s in target.shields:
+            blocked = min(s.amount, dmg)
+            s.amount -= blocked
+            dmg -= blocked
+        target.shields = [s for s in target.shields if s.amount > 0]
+        dmg += penetrating
         target.hp -= dmg
+        self.damage_event("impact", target, ("hero",), amount=dmg, blocked=incoming-dmg, entity=target)
         if thorns and source is not None:
             self.log("  荆棘反伤 1")
-            self.hit_attacker(source, 1)
+            with self.effect_source((target, ("hero",))):
+                self.hit_attacker(source, 1)
         return dmg
 
     def hit_beast(self, owner: Player, slot: int, dmg: int, pierce=False) -> int:
         b = owner.beasts[slot]
         if dmg <= 0 or not isinstance(b, Beast):
             return 0
-        if not pierce:
-            for s in b.shields:
-                blocked = min(s.amount, dmg)
-                s.amount -= blocked
-                dmg -= blocked
-            b.shields = [s for s in b.shields if s.amount > 0]
+        incoming = dmg
+        self.damage_event("strike", owner, ("beast", slot), amount=dmg, pierce=pierce)
+        penetrating = penetrating_amount(dmg, pierce)
+        dmg -= penetrating
+        for s in b.shields:
+            blocked = min(s.amount, dmg)
+            s.amount -= blocked
+            dmg -= blocked
+        b.shields = [s for s in b.shields if s.amount > 0]
+        dmg += penetrating
         b.hp -= dmg
         if b.hp <= 0:
             owner.beasts[slot] = None
             self.log(f"  {owner.name}的{b.name}倒下了")
+        self.damage_event("impact", owner, ("beast", slot), amount=dmg, blocked=incoming-dmg, entity=b)
         return dmg
 
     def hit_field(self, owner: Player, slot: int, dmg: int) -> int:
         f = owner.fields[slot]
         if not isinstance(f, Field) or dmg <= 0:
             return 0
+        self.damage_event("strike", owner, ("field", slot), amount=dmg, pierce=False)
         if f.ward:
             f.ward = False
             self.log(f"  {f.name}的免伤挡下了这次伤害")
+            self.damage_event("impact", owner, ("field", slot), amount=0, blocked=dmg, entity=f)
             return 0
         f.durability -= dmg
         if f.durability <= 0:
             owner.fields[slot] = None
             owner.grave += [f.first, f.second]
             self.log(f"  {owner.name}的{f.name}被打爆了")
+        self.damage_event("impact", owner, ("field", slot), amount=dmg, blocked=0, entity=f)
         return dmg
 
     def hit_attacker(self, source, dmg: int) -> None:
@@ -378,32 +428,37 @@ class Game:
                 p.cls = self.preset_classes[i]
             else:
                 p.cls = names[self.ask(p, "class", "选择职业", [CLASSES[k] for k in names])]
-            p.deck = starter_deck(p.cls)
+            p.deck = (build_deck(self.custom_decks[i]) if self.custom_decks and self.custom_decks[i]
+                      is not None else starter_deck(p.cls))
             self.rng.shuffle(p.deck)
             self.log(f"{p.name}选择了 {CLASSES[p.cls]}")
 
-        bids = [self.ask(p, "bid", "是否抢先手？抢到要多亮 1 张牌", ["抢先手", "不抢"]) == 0
-                for p in self.players]
-        if bids[0] != bids[1]:
-            first = 0 if bids[0] else 1
-            reveal = [5 if i == first else 4 for i in range(2)]
-            self.log(f"{self.players[first].name}抢到先手")
-        else:
+        if not self.advanced:
             first = self.rng.randrange(2)
-            reveal = [5 if (bids[0] and i == first) else 4 for i in range(2)]
-            self.log(f"{'双方都抢' if bids[0] else '双方都不抢'}，抛硬币：{self.players[first].name}先手")
+            self.log(f"新手模式：随机先后手，{self.players[first].name}先手（不禁牌）")
+        else:
+            bids = [self.ask(p, "bid", "是否抢先手？抢到要多亮 1 张牌", ["抢先手", "不抢"]) == 0
+                    for p in self.players]
+            if bids[0] != bids[1]:
+                first = 0 if bids[0] else 1
+                reveal = [5 if i == first else 4 for i in range(2)]
+                self.log(f"{self.players[first].name}抢到先手")
+            else:
+                first = self.rng.randrange(2)
+                reveal = [5 if (bids[0] and i == first) else 4 for i in range(2)]
+                self.log(f"{'双方都抢' if bids[0] else '双方都不抢'}，抛硬币：{self.players[first].name}先手")
 
-        shown = [self.rng.sample(p.deck, reveal[i]) for i, p in enumerate(self.players)]
-        for i, p in enumerate(self.players):
-            self.log(f"{p.name}亮出：" + "、".join(c.name for c in shown[i]))
-        for i, p in enumerate(self.players):
-            other = self.players[1 - i]
-            pool = list(shown[1 - i])
-            for k in range(2):
-                j = self.ask(p, "ban", f"禁掉{other.name}的第 {k + 1} 张牌", [c.label() for c in pool])
-                banned = pool.pop(j)
-                other.deck.remove(banned)
-                self.log(f"{p.name}禁掉了{other.name}的【{banned.name}】")
+            shown = [self.rng.sample(p.deck, reveal[i]) for i, p in enumerate(self.players)]
+            for i, p in enumerate(self.players):
+                self.log(f"{p.name}亮出：" + "、".join(c.name for c in shown[i]))
+            for i, p in enumerate(self.players):
+                other = self.players[1 - i]
+                pool = list(shown[1 - i])
+                for k in range(2):
+                    j = self.ask(p, "ban", f"禁掉{other.name}的第 {k + 1} 张牌", [c.label() for c in pool])
+                    banned = pool.pop(j)
+                    other.deck.remove(banned)
+                    self.log(f"{p.name}禁掉了{other.name}的【{banned.name}】")
 
         for i, p in enumerate(self.players):
             p.is_first = i == first
@@ -430,8 +485,12 @@ class Game:
 
     def start_turn(self, p: Player) -> None:
         p.turns += 1
+        if p.turns >= 2:
+            p.power += TURN_POWER
+            self.log(f"  {p.name}回合恢复 +{TURN_POWER} 纹力（现在 {p.power}）")
         p.hero_attacks = 1
         p.pierce = False
+        p.pierce_amount = 0
         p.vs_beast = 0
         p.draw_on_attack = False
         p.extended = False
@@ -447,8 +506,6 @@ class Game:
             b.shields = [s for s in b.shields if s.rounds > 0]
             b.sick = False
             b.attacked = False
-            if b.sealed:
-                b.sealed -= 1
         if p.defense is not None:
             p.defense_turns += 1
         if p.burn:
@@ -467,7 +524,9 @@ class Game:
                         b.shields.append(Shield(n + 1 if f.second.color == GREEN else n, SHIELD_ROUNDS))
             elif f.first.color == BLUE:
                 if f.second.color == RED and p.turns > 1:
-                    dealt = self.hit_hero(self.opp(p), n, pierce=True)
+                    slot = next(i for i, field in enumerate(p.fields) if field is f)
+                    with self.effect_source((p, ("field", slot))):
+                        dealt = self.hit_hero(self.opp(p), n, pierce=True)
                     self.log(f"  {f.name}：对方受到 {dealt} 伤害")
                     self.check_end()
                 elif f.second.color == GREEN:
@@ -488,13 +547,22 @@ class Game:
                     p.grave += [f.first, f.second]
                     self.log(f"  {p.name}的{f.name}耐久耗尽，消失了")
         for _, b in p.live_beasts():
+            if b.sealed:
+                b.sealed -= 1
             if b.level == 3:
                 b.l3_rounds -= 1
                 if b.l3_rounds <= 0:
-                    b.atk, b.hp, b.max_hp, b.sigils, b.pierce = b.l2_snapshot
-                    b.hp = max(1, b.hp)
+                    damage = b.max_hp - b.hp
+                    b.atk, _, b.max_hp, b.sigils, b.pierce = b.l2_snapshot
+                    b.hp = b.max_hp - damage
                     b.level = 2
-                    self.log(f"  {p.name}的纹兽退化回 2 级：{b.describe()}")
+                    b.l2_snapshot = None
+                    if b.hp <= 0:
+                        slot = next(i for i, unit in enumerate(p.beasts) if unit is b)
+                        p.beasts[slot] = None
+                        self.log(f"  {p.name}的纹兽退化后伤势过重，倒下了")
+                    else:
+                        self.log(f"  {p.name}的纹兽退化回 2 级：{b.describe()}")
         while len(p.hand) > HAND_LIMIT_END:
             i = self.ask(p, "discard", f"手牌超过 {HAND_LIMIT_END} 张，选一张献祭（+1 纹力）",
                          [c.label() for c in p.hand])
@@ -517,19 +585,23 @@ class Game:
     def act_play(self, p: Player, card: Card) -> None:
         """打出一张牌，发挥牌面效果。"""
         self.precheck(p, card)
-        self.take_from_hand(p, card)
-        try:
-            self.pay(p, self.card_cost(p, card))
-        except RuleError:
-            p.hand.append(card)
-            raise
-        self._use_class_discount(p, card)
-        self.log(f"▶ {p.name}打出【{card.name}】：{card.text}")
-        try:
-            self.resolve(p, card)
-        finally:
-            p.grave.append(card)
-        self.check_end()
+        if card not in p.hand or self.card_cost(p, card) > p.power:
+            raise RuleError("卡牌不在手牌中或纹力不足")
+        self.emit("cast", source=(p, ("card", card)), card=card)
+        with self.effect_source((p, ("card", card))):
+            self.take_from_hand(p, card)
+            try:
+                self.pay(p, self.card_cost(p, card))
+            except RuleError:
+                p.hand.append(card)
+                raise
+            self.log(f"▶ {p.name}打出【{card.name}】：{card.text}")
+            try:
+                self._use_class_discount(p, card)
+                self.resolve(p, card)
+            finally:
+                p.grave.append(card)
+            self.check_end()
 
     def act_combo(self, p: Player, main: Card, addon: Card) -> None:
         """合纹：主卡照常付费生效，附加卡免费，只加颜色特性。"""
@@ -541,22 +613,24 @@ class Game:
         if cost > p.power:
             raise RuleError(f"纹力不够（需要 {cost}，现有 {p.power}）")
         self.precheck(p, main)
-        p.hand.remove(main)
-        p.hand.remove(addon)
-        p.power -= cost
-        self._use_class_discount(p, main)
-        self.log(f"▶ {p.name}合纹【{main.name}】+【{addon.name}】")
-        try:
-            self.resolve(p, main)
-            self.addon_trait(p, addon)
-        finally:
-            p.grave += [main, addon]
-        self.check_end()
+        self.emit("cast", source=(p, ("card", main)), card=main)
+        with self.effect_source((p, ("card", main))):
+            p.hand.remove(main)
+            p.hand.remove(addon)
+            p.power -= cost
+            self.log(f"▶ {p.name}合纹【{main.name}】+【{addon.name}】")
+            try:
+                self._use_class_discount(p, main)
+                self.resolve(p, main)
+                self.addon_trait(p, addon)
+            finally:
+                p.grave += [main, addon]
+            self.check_end()
 
     def addon_trait(self, p: Player, addon: Card) -> None:
         if addon.color == RED:
-            p.pierce = True
-            self.log("  红纹附加：本回合角色攻击无视护盾")
+            p.pierce_amount = max(p.pierce_amount, 2)
+            self.log("  红纹附加：本回合角色攻击最多穿透2点护盾（重复附加不叠加）")
         elif addon.color == GREEN:
             n = math.ceil(addon.sigil / 2)
             p.shields.append(self.new_shield(p, n))
@@ -603,6 +677,8 @@ class Game:
         red, green = (card, cur.card) if card.color == RED else (cur.card, card)
         b = Beast(red.sigil, green.sigil, red.sigil, green.sigil, green.sigil)
         p.beasts[slot] = b
+        self.stats["summons"] += 1
+        self.emit("summon", owner=p, target=("beast", slot), color=GREEN)
         p.grave += [red, green]
         self.log(f"▶ {p.name}召唤了纹兽：{b.describe()}")
 
@@ -635,19 +711,30 @@ class Game:
         if t.level == 2:
             t.l2_snapshot = (t.atk, t.hp, t.max_hp, list(t.sigils), t.pierce)
             t.l3_rounds = L3_ROUNDS
-        t.atk += m.atk // 2
-        t.hp += m.hp // 2
-        t.max_hp += m.hp // 2
-        if card.color == RED:
-            t.atk += EVOLVE_BONUS
-        elif card.color == GREEN:
-            t.hp += EVOLVE_BONUS
-            t.max_hp += EVOLVE_BONUS
-        else:
+        atk_gain, hp_gain, shield_gain = self.evolution_gains(m, card, t.level + 1)
+        t.atk += atk_gain
+        t.hp += hp_gain
+        t.max_hp += hp_gain
+        if card.color == BLUE:
             t.pierce = True
+        t.shields.append(self.new_shield(p, shield_gain))
         t.sigils.append(card.color)
         t.level += 1
+        self.stats[f"evolve{t.level}"] += 1
+        if t.level == 3:
+            t.sealed = 0
+            self.log("  3级觉醒：临时+1攻/+1血，清除封印，额外获得2护盾（不重置攻击次数）")
+        self.emit("evolve", source=(p, ("beast", material)), owner=p,
+                  target=("beast", target), color=card.color, level=t.level)
         self.log(f"▶ {p.name}献祭{m.name}，用【{card.name}】进化：{t.describe()}")
+
+    @staticmethod
+    def evolution_gains(material, card, level):
+        atk = max(1, math.ceil(material.atk / 2)) + (EVOLVE_BONUS if card.color == RED else 0)
+        hp = max(1, math.ceil(material.hp / 2)) + (EVOLVE_BONUS+1 if card.color == GREEN else 0)
+        if level == 3:
+            return atk+1, hp+1, 3
+        return atk, hp, 1
 
     def act_field_card(self, p: Player, card: Card, slot: int) -> None:
         """往纹域位放牌。第一张定类型（盖着），第二张配合；位子上已有纹域就覆盖。"""
@@ -659,7 +746,6 @@ class Game:
         except RuleError:
             p.hand.append(card)
             raise
-        self._use_class_discount(p, card)
         if isinstance(cur, Field):
             p.grave += [cur.first, cur.second]
             self.log(f"  {p.name}覆盖了旧的{cur.name}")
@@ -667,11 +753,13 @@ class Game:
         if cur is None:
             p.fields[slot] = Pending(card)
             self.log(f"▶ {p.name}在纹域位 {slot + 1} 盖了一张牌")
+            self._use_class_discount(p, card)
             return
         dur = max(1, cur.card.sigil + card.sigil)
         f = Field(cur.card, card, dur)
         p.fields[slot] = f
         self.log(f"▶ {p.name}的纹域成型：{f.describe()}")
+        self._use_class_discount(p, card)
 
     def act_extend(self, p: Player, card: Card, slot: int) -> None:
         """献祭一张蓝牌（不换纹力）给纹域 +1 耐久，每回合 1 次。"""
@@ -707,18 +795,21 @@ class Game:
 
     def _flip(self, p: Player) -> None:
         card = p.defense
-        p.defense = None
-        self.log(f"  {p.name}翻开防御纹【{card.name}】：{card.text}")
-        try:
-            self.resolve(p, card)
-        except RuleError as e:
-            self.log(f"  （{e}，效果无效）")
-        p.grave.append(card)
+        self.emit("cast", source=(p, ("defense", card)), card=card)
+        with self.effect_source((p, ("defense", card))):
+            p.defense = None
+            self.log(f"  {p.name}翻开防御纹【{card.name}】：{card.text}")
+            try:
+                self.resolve(p, card)
+            except RuleError as e:
+                self.log(f"  （{e}，效果无效）")
+            p.grave.append(card)
 
     def act_sacrifice(self, p: Player, card: Card) -> None:
         self.take_from_hand(p, card)
         p.grave.append(card)
         p.power += 1
+        self.stats["sacrifices"] += 1
         self.log(f"▶ {p.name}献祭了一张牌，纹力 +1（现在 {p.power}）")
 
     def act_attack(self, p: Player, attacker: int | None, target: tuple) -> None:
@@ -747,7 +838,7 @@ class Game:
         if attacker is None:
             p.hero_attacks -= 1
             dmg = p.hero_atk(vs_beast=kind == "beast")
-            pierce = p.pierce
+            pierce = True if p.pierce else p.pierce_amount
             who = p.name
         else:
             b = p.beasts[attacker]
@@ -760,22 +851,23 @@ class Game:
         self.log(f"▶ {who}宣告攻击{tname}（{dmg} 点）")
 
         if kind in ("hero", "beast"):
-            target = self.defense_window(foe, target, dmg)
+            target = self.defense_window(foe, target, dmg, pierce=pierce)
 
-        if target[0] == "hero":
-            dealt = self.hit_hero(foe, dmg, pierce, source)
-            self.log(f"  {foe.name}受到 {dealt} 伤害，剩 {foe.hp} 血")
-        elif target[0] == "beast":
-            dealt = self.hit_beast(foe, target[1], dmg, pierce)
-            self.log(f"  纹兽受到 {dealt} 伤害")
-        else:
-            self.hit_field(foe, target[1], dmg)
+        with self.effect_source((p, ("hero",) if attacker is None else ("beast", attacker))):
+            if target[0] == "hero":
+                dealt = self.hit_hero(foe, dmg, pierce, source)
+                self.log(f"  {foe.name}受到 {dealt} 伤害，剩 {foe.hp} 血")
+            elif target[0] == "beast":
+                dealt = self.hit_beast(foe, target[1], dmg, pierce)
+                self.log(f"  纹兽受到 {dealt} 伤害")
+            else:
+                self.hit_field(foe, target[1], dmg)
         if attacker is None and p.draw_on_attack:
             self.draw(p, 1)
             self.log(f"  {p.name}攻击后抽 1 张")
         self.check_end()
 
-    def defense_window(self, foe: Player, target: tuple, dmg: int) -> tuple:
+    def defense_window(self, foe: Player, target: tuple, dmg: int, pierce=False) -> tuple:
         """8 秒判定：防守方选择纹兽挡刀、紧急举盾（两倍费用）或都不用。"""
         options, actions = ["都不用"], [None]
         if target[0] == "hero":
@@ -789,16 +881,22 @@ class Game:
             return target
         self.log(f"  —— {foe.name}的 8 秒判定 ——")
         what = "角色" if target[0] == "hero" else "纹兽"
-        a = actions[self.ask(foe, "defense", f"对方要攻击你的{what}，造成 {dmg} 点。你要：", options)]
-        if a is None:
+        previous = self.defense_context
+        self.defense_context = dict(target=target, damage=dmg, pierce=pierce)
+        try:
+            pierce_text = "（无视护盾）" if pierce is True else (f"（最多穿透{pierce}点护盾）" if pierce else "")
+            a = actions[self.ask(foe, "defense", f"对方要攻击你的{what}，造成 {dmg} 点{pierce_text}。你要：", options)]
+            if a is None:
+                return target
+            if a[0] == "block":
+                self.log(f"  {foe.name}让纹兽挡刀")
+                return ("beast", a[1])
+            foe.power -= 2 * foe.defense_cost()
+            self._flip(foe)
+            self.check_end()
             return target
-        if a[0] == "block":
-            self.log(f"  {foe.name}让纹兽挡刀")
-            return ("beast", a[1])
-        foe.power -= 2 * foe.defense_cost()
-        self._flip(foe)
-        self.check_end()
-        return target
+        finally:
+            self.defense_context = previous
 
     # ================================================================ 牌面效果
     def resolve(self, p: Player, card: Card) -> None:
@@ -859,6 +957,8 @@ class Game:
             a, h = self.rng.randint(1, 3), self.rng.randint(1, 3)
             b = Beast(a, h, a, h, h)
             p.beasts[slots[0]] = b
+            self.stats["summons"] += 1
+            self.emit("summon", owner=p, target=("beast", slots[0]), color=BLUE)
             self.log(f"  随机召唤：{b.describe()}")
         elif e == "damage":
             self.first_turn_guard(p)
@@ -874,6 +974,8 @@ class Game:
                 self.hit_beast(foe, t, prm["amount"])
         elif e == "burn":
             self.first_turn_guard(p)
+            self.emit("status", source=self._effect_source or (p, ("hero",)), owner=foe,
+                      target=("hero",), color=BLUE, label=f"燃烧 +{prm['amount']}")
             foe.burn += prm["amount"]
         elif e == "gain_power":
             p.power += prm["n"]

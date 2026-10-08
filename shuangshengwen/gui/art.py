@@ -310,6 +310,14 @@ def draw_beast(surf, rect: pygame.Rect, b, atk_shown: int, selected=False, can_a
     ring = OK if can_attack else BOARD_EDGE
     pygame.draw.ellipse(surf, (34, 38, 56), rect)
     pygame.draw.ellipse(surf, ring, rect, 3)
+    if b.level >= 2:
+        pulse = (math.sin(pygame.time.get_ticks() / 280) + 1) / 2
+        glow = COLOR_GLOW[b.sigils[-1]] if b.sigils else GOLD
+        layer = pygame.Surface(rect.inflate(28, 28).size, pygame.SRCALPHA)
+        pygame.draw.ellipse(layer, (*glow, int(70+90*pulse)), layer.get_rect().inflate(-6, -6), 3 if b.level == 2 else 5)
+        if b.level == 3:
+            sigil_pattern(layer, layer.get_rect(), glow, seed_of(b.species), density=5, width=2, alpha=150)
+        surf.blit(layer, rect.inflate(28, 28).topleft)
     beast_body(surf, rect.inflate(-28, -36), b.base_atk, b.base_hp, b.species)
     # 进化叠加的纹路：每级一道对应颜色的光纹
     for k, col in enumerate(b.sigils):
@@ -317,7 +325,7 @@ def draw_beast(surf, rect: pygame.Rect, b, atk_shown: int, selected=False, can_a
         sigil_pattern(layer, layer.get_rect(), COLOR_GLOW[col], seed_of(b.species + str(k)), 3, 2, 200)
         surf.blit(layer, rect.topleft)
     text(surf, b.name, (rect.centerx, rect.top - 12), 14, INK, center=True, bold=True)
-    text(surf, f"{b.level}级", (rect.centerx, rect.bottom - 14), 12, GOLD, center=True)
+    text(surf, "觉醒·3级" if b.level == 3 else f"{b.level}级", (rect.centerx, rect.bottom - 14), 12, GOLD, center=True)
     gem(surf, (rect.left + 12, rect.bottom - 12), 15, (200, 150, 40), atk_shown, 18)
     gem(surf, (rect.right - 12, rect.bottom - 12), 15, (190, 50, 50), b.hp, 18)
     if b.shield_total():

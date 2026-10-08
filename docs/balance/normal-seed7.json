@@ -1,0 +1,33 @@
+{
+  "games": 360,
+  "seed": 7,
+  "ai": "normal",
+  "advanced": false,
+  "matchups": {
+    "warrior/archmage": {
+      "wins": 43,
+      "decided": 80,
+      "rate": 0.5375
+    },
+    "warrior/guardian": {
+      "wins": 42,
+      "decided": 80,
+      "rate": 0.525
+    },
+    "archmage/guardian": {
+      "wins": 28,
+      "decided": 80,
+      "rate": 0.35
+    }
+  },
+  "actions_per_game": {
+    "summons": 4.163888888888889,
+    "evolve2": 0.33055555555555555,
+    "evolve3": 0.027777777777777776,
+    "sacrifices": 1.5
+  },
+  "first_winrate": 0.6055555555555555,
+  "mean_rounds": 8.520833333333334,
+  "median_rounds": 8.5,
+  "timeouts": 0
+}
