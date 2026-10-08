@@ -5,6 +5,9 @@
 """
 
 from dataclasses import dataclass, field
+from collections import Counter
+import json
+from pathlib import Path
 
 RED, GREEN, BLUE = "red", "green", "blue"
 COLOR_NAME = {RED: "红", GREEN: "绿", BLUE: "蓝"}
@@ -87,12 +90,13 @@ def _pool() -> list[Card]:
 
 POOL = _pool()
 
-# 新手套牌：每个职业从 40 张里去掉 8 张，正好 32 张
+# 32张特色预组；同名最多2张。组合组件有重复，爆发/资源牌先保留单张。
 STARTER_DROPS = {
-    "warrior": ["生机", "甘霖", "庇护", "磐石", "免伤符", "加固符", "洞察", "破法"],
-    "guardian": ["迅斩", "战吼", "斩兽", "碎域", "免伤符", "加固符", "洞察", "破法"],
-    "archmage": ["斩兽", "生机", "庇护", "免伤符", "加固符", "碎域", "洞察", "破法"],
+    "warrior": ["荆棘", "磐石", "重铠", "免伤符", "加固符", "洞察", "破法", "混沌", "秘法盾"],
+    "guardian": ["迅斩", "战吼", "狂怒", "燃魂", "混沌", "洞察", "免伤符", "加固符", "破法"],
+    "archmage": ["斩兽", "碎域", "重锤", "庇护", "甘霖", "磐石", "免伤符", "加固符", "破法"],
 }
+STARTER_EXTRA = {"warrior": "裂风", "guardian": "青藤", "archmage": "秘法盾"}
 
 
 def new_pool() -> list[Card]:
@@ -100,11 +104,32 @@ def new_pool() -> list[Card]:
     return _pool()
 
 
+def build_deck(names: list[str]) -> list[Card]:
+    """自由构筑不限制配色；每份卡牌都是独立对象。"""
+    if len(names) != 32:
+        raise ValueError("套牌必须有32张牌")
+    if not all(isinstance(name, str) for name in names):
+        raise ValueError("套牌必须是卡牌名称列表")
+    if any(n > 2 for n in Counter(names).values()):
+        raise ValueError("同名卡最多带2张")
+    legal = {c.name for c in POOL}
+    if set(names) - legal:
+        raise ValueError("套牌包含未知卡牌")
+    return [next(c for c in new_pool() if c.name == name) for name in names]
+
+
+def read_deck(path) -> list[str]:
+    names = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    if not isinstance(names, list):
+        raise ValueError("套牌文件必须是包含32个卡名的JSON列表")
+    build_deck(names)
+    return names
+
+
 def starter_deck(cls: str) -> list[Card]:
     drops = set(STARTER_DROPS[cls])
-    deck = [c for c in new_pool() if c.name not in drops]
-    assert len(deck) == 32, (cls, len(deck))
-    return deck
+    names = [c.name for c in POOL if c.name not in drops] + [STARTER_EXTRA[cls]]
+    return build_deck(names)
 
 
 # 1 级纹兽：攻血决定种类

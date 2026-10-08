@@ -20,9 +20,10 @@ import time
 import pygame
 
 from ..ai import AIController
-from ..cards import BLUE, Card
+from ..cards import BLUE, Card, read_deck
 from ..engine import CLASSES, Beast, Controller, Field, Game, Pending, Player, RuleError
 from . import art
+from .effects import Flight, draw_burst
 from .art import BOARD, BOARD_EDGE, CARD_H, CARD_W, DANGER, DIM, GOLD, INK, OK, PANEL
 
 W, H = 1280, 800
@@ -37,7 +38,7 @@ class Quit(Exception):
 
 
 class GUI:
-    def __init__(self, seed=None, timer=True, screenshot_dir=None):
+    def __init__(self, seed=None, timer=True, screenshot_dir=None, advanced=False, animations=True, deck=None):
         pygame.init()
         # Editors may run the GUI again in a process that previously called pygame.quit().
         art._fonts.clear()
@@ -47,6 +48,14 @@ class GUI:
         self.clock = pygame.time.Clock()
         self.seed = seed
         self.timer = timer
+        self.advanced = advanced
+        self.animations = animations
+        self.deck = deck
+        self.flight = None
+        self.flight_born = 0.
+        self.cast_visual = None
+        self.bursts = []
+        self.recoil = None
         self.logs: list[str] = []
         self.toast = ("", 0.0)
         self.drag = None          # ("card", card) 或 ("attack", attacker)
@@ -104,8 +113,115 @@ class GUI:
     def on_log(self, line: str):
         self.logs.append(line)
         self.logs = self.logs[-200:]
-        if self.game and self.me and self.game.players[self.game.current] is not self.me and line.startswith("▶"):
+        if self.animations and self.game and self.me and self.game.players[self.game.current] is not self.me and line.startswith("▶"):
             self.wait(0.55)
+
+    def visual_position(self, owner, target):
+        side = "me" if owner is self.me else "foe"
+        if target[0] == "hero":
+            return self.my_hero if side == "me" else self.enemy_hero
+        if target[0] == "defense":
+            return (self.my_def if side == "me" else self.foe_def).center
+        if target[0] == "card":
+            if self.cast_visual and self.cast_visual[0] is target[1]:
+                return self.cast_visual[1]
+            for card, rect in zip(owner.hand, self.hand_rects(len(owner.hand))):
+                if card is target[1] and side == "me":
+                    return rect.center
+            return (160, 60) if side == "foe" else self.my_hero
+        return self.slot_rects[(side, target[0], target[1])].center
+
+    def on_event(self, event):
+        """Animate before damage, then show the exact resolved hit (including shields/death)."""
+        if not self.animations:
+            return
+        kind = event["kind"]
+        if kind == "cast":
+            owner, origin = event["source"]
+            card = event["card"]
+            start = self.visual_position(owner, origin)
+            end = (500, 475) if owner is self.me else (500, 130)
+            born = time.time()
+            def lift():
+                t = min(1, (time.time()-born)/.18)
+                t = 1-(1-t)**3
+                center = (start[0]+(end[0]-start[0])*t, start[1]+(end[1]-start[1])*t)
+                scale = .7 + .18*t
+                art.draw_card(self.screen, card, (center[0]-CARD_W*scale/2, center[1]-CARD_H*scale/2), scale, highlight=GOLD)
+            self.wait_overlay(.18, lift)
+            self.cast_visual = (card, end, time.time())
+        elif kind in ("strike", "status"):
+            owner, origin = event["source"]
+            color = origin[1].color if origin[0] in ("card", "defense") else art.HERO_COLOR[owner.cls]
+            body = None
+            if origin[0] == "beast":
+                beast = owner.beasts[origin[1]]
+                if isinstance(beast, Beast):
+                    body = art.asset("beasts", beast.species, (96, 82))
+            self.flight = Flight(self.visual_position(owner, origin),
+                                 self.visual_position(event["owner"], event["target"]),
+                                 color=color, style="beast" if origin[0] == "beast" else "spell", body=body)
+            self.flight_born = time.time()
+            try:
+                self.wait(self.flight.duration)
+            finally:
+                self.flight = None
+            if kind == "status":
+                pos = self.visual_position(event["owner"], event["target"])
+                self.popups.append([pos[0], pos[1]-15, event["label"], GOLD, time.time()])
+                self.bursts.append((pos, color, time.time(), False, False))
+                self.wait(.16)
+        elif kind == "impact":
+            pos = self.visual_position(event["owner"], event["target"])
+            entity = event["entity"]
+            if hasattr(entity, "hp"):
+                self._last_hp[id(entity)] = entity.hp
+            amount, blocked = event["amount"], event["blocked"]
+            label = f"−{amount}" if amount else "格挡"
+            if blocked and amount:
+                label += f" · 挡{blocked}"
+            self.popups.append([pos[0], pos[1]-15, label, DANGER if amount else art.COLOR_GLOW["blue"], time.time()])
+            self.bursts.append((pos, "blue" if not amount else "red", time.time(), bool(blocked), False))
+            self.recoil = (event["owner"], event["target"], time.time(), min(10, 3+amount))
+            self.wait(.2)
+        elif kind in ("evolve", "summon"):
+            pos = self.visual_position(event["owner"], event["target"])
+            if kind == "evolve":
+                self.flight = Flight(self.visual_position(*event["source"]), pos, color=event["color"], duration=.3)
+                self.flight_born = time.time()
+                try:
+                    self.wait(.3)
+                finally:
+                    self.flight = None
+                self.popups.append([pos[0], pos[1]-30, f"{event['level']}级觉醒" if event['level'] == 3 else "进化！", GOLD, time.time()])
+            self.bursts.append((pos, event["color"], time.time(), False, True))
+            self.wait(.35)
+
+    def wait_overlay(self, seconds, overlay):
+        end = time.time() + seconds
+        while time.time() < end:
+            self.pump()
+            self.render(overlay)
+            self.clock.tick(60)
+
+    def recoil_offset(self, owner, target):
+        if self.recoil and self.recoil[0] is owner and self.recoil[1] == target:
+            age = time.time()-self.recoil[2]
+            if age < .22:
+                return round(math.sin(age*90)*self.recoil[3]*(1-age/.22)), 0
+        return 0, 0
+
+    def draw_effects(self):
+        now = time.time()
+        if self.cast_visual:
+            card, pos, born = self.cast_visual
+            if now-born < 1.1:
+                art.draw_card(self.screen, card, (pos[0]-CARD_W*.44, pos[1]-CARD_H*.44), .88, highlight=GOLD)
+        if self.flight:
+            self.flight.draw(self.screen, min(1, (now-self.flight_born)/self.flight.duration))
+        self.bursts = [b for b in self.bursts if now-b[2] < .65]
+        for pos, color, born, blocked, awakening in self.bursts:
+            draw_burst(self.screen, pos, color, now-born, blocked, awakening)
 
     # ================================================================ 绘制
     def render(self, overlay=None):
@@ -122,6 +238,7 @@ class GUI:
             self.draw_hand(me)
             self.draw_hud(me, foe)
         self.draw_log()
+        self.draw_effects()
         self.draw_popups()
         if self.drag:
             self.draw_drag()
@@ -144,6 +261,7 @@ class GUI:
         for (sd, kind, i), r in self.slot_rects.items():
             if sd != side:
                 continue
+            r = r.move(self.recoil_offset(p, (kind, i)))
             if kind == "field":
                 f = p.fields[i]
                 pygame.draw.rect(s, (20, 22, 34), r, border_radius=12)
@@ -203,8 +321,10 @@ class GUI:
         my_turn = g.players[g.current] is me
         can = my_turn and me.hero_attacks > 0 and me.turns > 1
         sel = bool(self.drag and self.drag[0] == "attack" and self.drag[1] is None)
-        art.draw_hero(self.screen, self.enemy_hero, self.hero_r, foe)
-        art.draw_hero(self.screen, self.my_hero, self.hero_r, me, selected=sel, glow=can)
+        foe_pos = tuple(a+b for a, b in zip(self.enemy_hero, self.recoil_offset(foe, ("hero",))))
+        me_pos = tuple(a+b for a, b in zip(self.my_hero, self.recoil_offset(me, ("hero",))))
+        art.draw_hero(self.screen, foe_pos, self.hero_r, foe)
+        art.draw_hero(self.screen, me_pos, self.hero_r, me, selected=sel, glow=can)
         for p, c in ((foe, self.enemy_hero), (me, self.my_hero)):
             art.text(self.screen, f"{p.name} · {CLASSES[p.cls].split('（')[0]}", (c[0] + 70, c[1] - 30), 15, INK, bold=True)
             if p.burn:
@@ -219,7 +339,7 @@ class GUI:
         last = self._last_hp.get(key)
         if last is not None and p.hp != last:
             d = p.hp - last
-            self.popups.append([pos[0] - 70, pos[1], f"{d:+d}", OK if d > 0 else DANGER, time.time()])
+            self.popups.append([pos[0], pos[1], f"{d:+d}", OK if d > 0 else DANGER, time.time()])
         self._last_hp[key] = p.hp
 
     def draw_popups(self):
@@ -227,7 +347,8 @@ class GUI:
         self.popups = [p for p in self.popups if now - p[4] < 1.2]
         for x, y, t, c, born in self.popups:
             k = now - born
-            art.draw_impact(self.screen, (x + 70, y), c, k, healing=t.startswith("+"))
+            if t.startswith("+"):
+                art.draw_impact(self.screen, (x, y), c, k, healing=True)
             art.text(self.screen, t, (x, y - k * 40), 30, c, center=True, bold=True)
 
     def draw_hand(self, me: Player):
@@ -260,6 +381,7 @@ class GUI:
         g = self.game
         art.gem(s, (230, 560), 26, (60, 110, 220), me.power, 24)
         art.text(s, "纹力", (230, 596), 13, DIM, center=True)
+        art.text(s, "第2回合起每回合 +1", (230, 615), 11, GOLD, center=True)
         art.gem(s, (230, 92), 22, (60, 110, 220), foe.power, 20)
         art.text(s, "纹力", (230, 124), 12, DIM, center=True)
         art.text(s, f"牌库 {len(me.deck)}", (120, 548), 14, DIM)
@@ -509,8 +631,14 @@ class GUI:
             card = cards[choice]
         cost = g.evolution_cost(me, target, material, card)
         sacrificed = me.beasts[material]
+        atk_gain, hp_gain, shield_gain = g.evolution_gains(sacrificed, card, survivor.level+1)
+        gains = f"获得+{atk_gain}攻、+{hp_gain}血、{shield_gain}护盾"
+        if card.color == BLUE:
+            gains += "和穿透"
+        if survivor.level == 2:
+            gains += "；3级维持2回合，退化保留伤势"
         prompt = (f"保留{survivor.name}并升到{survivor.level + 1}级；献祭{sacrificed.name}（会消失），"
-                  f"消耗【{card.name}】和{cost}纹力。确认升级？")
+                  f"消耗【{card.name}】和{cost}纹力。{gains}。确认升级？")
         if self.modal(prompt, ["确认献祭并升级", "取消"]) != 0:
             return
         g.act_evolve(me, target, material, card)
@@ -655,8 +783,11 @@ class GUI:
         self.logs = []
         self._last_hp = {}
         self.popups = []
+        self.bursts = []
+        self.flight = self.cast_visual = self.recoil = None
         human = GUIController(self)
-        g = Game(("你", "人机"), (human, AIController()), seed=self.seed, log=self.on_log)
+        g = Game(("你", "人机"), (human, AIController(seed=self.seed)), seed=self.seed,
+                 log=self.on_log, events=self.on_event, advanced=self.advanced, decks=(self.deck, None))
         self.game, self.me = g, g.players[0]
         return g
 
@@ -698,6 +829,13 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="《双生纹》图形界面")
     ap.add_argument("--seed", type=int)
     ap.add_argument("--no-timer", action="store_true", help="关闭每回合 30 秒计时")
+    ap.add_argument("--advanced", action="store_true", help="启用抢先手、亮牌禁牌")
+    ap.add_argument("--no-animations", action="store_true", help="关闭战斗动画")
+    ap.add_argument("--deck", help="你的自定义套牌JSON文件（32张，同名最多2张）")
     a = ap.parse_args(argv)
-    GUI(seed=a.seed, timer=not a.no_timer).run()
+    try:
+        deck = read_deck(a.deck) if a.deck else None
+    except (OSError, ValueError) as error:
+        ap.error(str(error))
+    GUI(seed=a.seed, timer=not a.no_timer, advanced=a.advanced, animations=not a.no_animations, deck=deck).run()
 

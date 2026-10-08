@@ -1,0 +1,28 @@
+{
+  "games": 720,
+  "seeds": [
+    7,
+    2003
+  ],
+  "ai": "normal",
+  "advanced": false,
+  "matchups": {
+    "warrior/archmage": {
+      "wins": 79,
+      "decided": 160,
+      "rate": 0.49375
+    },
+    "warrior/guardian": {
+      "wins": 86,
+      "decided": 160,
+      "rate": 0.5375
+    },
+    "archmage/guardian": {
+      "wins": 65,
+      "decided": 160,
+      "rate": 0.40625
+    }
+  },
+  "first_winrate": 0.5902777777777777,
+  "mean_rounds": 8.459722222222222
+}

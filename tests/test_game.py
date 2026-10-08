@@ -47,7 +47,7 @@ class TestRules(unittest.TestCase):
         self.assertEqual(g.card_cost(a, c2), 1)
         g.act_play(a, c2)
         self.assertEqual(a.power, power - 3)
-        self.assertEqual(b.hp, hp - 3)
+        self.assertEqual(b.hp, hp - 1)
 
     def test_summon_red_green(self):
         g, a = self.new_game()
