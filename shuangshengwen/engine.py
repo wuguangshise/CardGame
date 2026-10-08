@@ -16,6 +16,7 @@ HERO_HP = 15
 BASE_ATK = 1
 START_POWER = 12
 SECOND_BONUS_POWER = 1  # 后手多 1 纹力，抵消先手优势
+CLASS_BONUS_POWER = {"archmage": 1}  # 大魔导师开局多 1 纹力
 OPEN_HAND = 4
 DRAW_PER_TURN = 2
 HAND_LIMIT_END = 5
@@ -26,7 +27,7 @@ EVOLVE_BONUS = 1  # 红纹进化 +1 攻，绿纹进化 +1 血（加纹值会让 
 
 CLASSES = {
     "warrior": "红 · 战士（每回合第一张红牌 -1 费）",
-    "archmage": "蓝 · 大魔导师（每回合第一张蓝牌 -1 费）",
+    "archmage": "蓝 · 大魔导师（法术连锁：本回合第 2 张蓝牌起 -1 费，第 2 张时对方受 3 伤害并抽 1 张）",
     "guardian": "绿 · 守护者（护盾多挡对方 1 个回合）",
 }
 
@@ -35,8 +36,13 @@ MARK = {RED: "赤", GREEN: "翠", BLUE: "苍"}
 DAMAGE_EFFECTS = {"field_damage", "damage", "burn", "storm"}
 
 
-CLASS_DISCOUNT = {"warrior": RED, "archmage": BLUE}
-EVERY_CARD_DISCOUNT = {"archmage"}  # 大魔导师每张蓝牌都 -1 费
+CLASS_DISCOUNT = {"warrior": RED}
+# 大魔导师「法术连锁」：本回合第 1 张蓝牌原价，之后每张比上一张多减 1 费（第 2 张 -1，第 3 张 -2……）
+CHAIN_STEP = 1
+CHAIN_BURST_AT = 2  # 本回合打出第 2 张蓝牌时连锁爆发
+CHAIN_BURST_DRAW = 1
+CHAIN_BURST_POWER = 0  # 爆发返还的纹力
+CHAIN_BURST_DMG = 3  # 爆发对对方角色造成的伤害（无视护盾）
 
 
 class RuleError(Exception):
@@ -164,6 +170,7 @@ class Player:
     draw_on_attack: bool = False
     extended: bool = False
     discount_used: bool = False
+    chain: int = 0  # 大魔导师本回合已经打出的蓝牌数（法术连锁）
     burn: int = 0
     deck_empty: bool = False
     known_defense: Card | None = None  # 洞察看到的对方盖牌
@@ -277,12 +284,22 @@ class Game:
         p.power -= n
 
     def card_cost(self, p: Player, card: Card) -> int:
-        """职业被动：战士每回合第一张红牌 -1 费，大魔导师每回合第一张蓝牌 -1 费。"""
-        if CLASS_DISCOUNT.get(p.cls) == card.color and (not p.discount_used or p.cls in EVERY_CARD_DISCOUNT):
+        """职业被动：战士每回合第一张红牌 -1 费；大魔导师法术连锁，本回合第 N 张蓝牌 -(N-1) 费。"""
+        if p.cls == "archmage" and card.color == BLUE:
+            return max(0, card.cost - p.chain * CHAIN_STEP)
+        if CLASS_DISCOUNT.get(p.cls) == card.color and not p.discount_used:
             return max(0, card.cost - 1)
         return card.cost
 
     def _use_class_discount(self, p: Player, card: Card) -> None:
+        if p.cls == "archmage" and card.color == BLUE:
+            p.chain += 1
+            if p.chain == CHAIN_BURST_AT and p.turns > 1 and CHAIN_BURST_DMG:
+                self.log(f"  法术连锁爆发：对方角色受 {CHAIN_BURST_DMG} 伤害，抽 {CHAIN_BURST_DRAW} 张，返还 {CHAIN_BURST_POWER} 纹力")
+                self.hit_hero(self.opp(p), CHAIN_BURST_DMG, pierce=True)
+                self.draw(p, CHAIN_BURST_DRAW)
+                p.power += CHAIN_BURST_POWER
+                self.check_end()
         if CLASS_DISCOUNT.get(p.cls) == card.color:
             p.discount_used = True
 
@@ -393,6 +410,8 @@ class Game:
             self.draw(p, OPEN_HAND)
         self.draw(self.players[1 - first], 1)
         self.players[1 - first].power += SECOND_BONUS_POWER
+        for p in self.players:
+            p.power += CLASS_BONUS_POWER.get(p.cls, 0)
         return first
 
     # ---------- 回合 ----------
@@ -417,6 +436,7 @@ class Game:
         p.draw_on_attack = False
         p.extended = False
         p.discount_used = False
+        p.chain = 0
         self.log(f"\n===== {p.name}的第 {p.turns} 回合 =====")
         for s in p.shields:
             s.rounds -= 1

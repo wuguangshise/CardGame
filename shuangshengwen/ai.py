@@ -138,8 +138,14 @@ def apply(game: Game, me: Player, act: tuple) -> None:
 
 # ---------------------------------------------------------------- 控制器
 class AIController(Controller):
-    def __init__(self, think: bool = True):
+    """level：weak = 新手（经常不选最优动作），normal = 默认，strong = 高手（每步多看一步）。"""
+
+    WEAK_MISTAKE = 0.45
+    BEAM = 6
+
+    def __init__(self, think: bool = True, level: str = "normal"):
         self.think = think
+        self.level = level
         self._rng = random.Random()
 
     # ---------- 各种选择（防守、目标等）----------
@@ -208,28 +214,60 @@ class AIController(Controller):
             except RuleError:
                 return
 
-    def _best(self, game: Game, me: Player):
+    def _try(self, game: Game, me: Player, act: tuple):
+        """在副本上做一个动作，返回 (副本, 副本里的我)；不合法返回 None。"""
         idx = game.players.index(me)
-        base = score(game, me)
-        best, best_gain = None, 0.15
         sim = AIController(think=False)
+        memo = {id(c): sim for c in game.ctrl}
+        memo[id(game.log)] = _noop
+        g2 = copy.deepcopy(game, memo)
+        g2.log = _noop
+        g2.rng = random.Random(self._rng.random())
+        me2 = g2.players[idx]
+        try:
+            apply(g2, me2, act)
+        except RuleError:
+            return None
+        except GameOver:
+            pass
+        return g2, me2
+
+    def _eval(self, game: Game, me: Player) -> float:
+        v = score(game, me)
+        if self.level == "strong" and me.cls == "archmage" and abs(v) < 500:
+            # 高手会留蓝牌凑一回合两张，触发法术连锁
+            v += 0.7 * min(sum(c.color == "blue" for c in me.hand), 2)
+        return v
+
+    def _ranked(self, game: Game, me: Player) -> list[tuple[float, tuple, Game, Player]]:
+        out = []
         for act in candidate_actions(game, me):
-            memo = {id(c): sim for c in game.ctrl}
-            memo[id(game.log)] = _noop
-            g2 = copy.deepcopy(game, memo)
-            g2.log = _noop
-            g2.rng = random.Random(self._rng.random())
-            me2 = g2.players[idx]
-            try:
-                apply(g2, me2, act)
-            except RuleError:
-                continue
-            except GameOver:
-                pass
-            gain = score(g2, me2) - base
-            if gain > best_gain:
-                best, best_gain = act, gain
-        return best
+            r = self._try(game, me, act)
+            if r is not None:
+                out.append((self._eval(r[0], r[1]), act, r[0], r[1]))
+        out.sort(key=lambda x: -x[0])
+        return out
+
+    def _best(self, game: Game, me: Player):
+        base = self._eval(game, me)
+        ranked = [x for x in self._ranked(game, me) if x[0] - base > 0.15]
+        if not ranked:
+            return None
+        if self.level == "weak" and self._rng.random() < self.WEAK_MISTAKE:
+            return self._rng.choice(ranked)[1]
+        if self.level == "strong":
+            # 前几名动作各往后多看一步：先打一张差一点的牌，换来下一步更大的收益
+            best, best_v = ranked[0][1], ranked[0][0]
+            for v, act, g2, me2 in ranked[: self.BEAM]:
+                if g2.winner is not None:
+                    return act
+                follow = self._ranked(g2, me2)
+                if follow and follow[0][0] > v:
+                    v = follow[0][0]
+                if v > best_v + 0.05:
+                    best, best_v = act, v
+            return best
+        return ranked[0][1]
 
     def _fuel(self, game: Game, me: Player) -> bool:
         """没有好动作时，纹力紧张就献祭最没用的牌换纹力。"""

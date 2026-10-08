@@ -32,6 +32,23 @@ class TestRules(unittest.TestCase):
         a.turns = 2
         return g, a
 
+    def test_archmage_chain(self):
+        g, a = self.new_game()
+        a.cls = "archmage"
+        b = g.opp(a)
+        b.shields = []
+        hp, power = b.hp, 10
+        a.power = power
+        c1 = next(c for c in POOL if c.name == "灵感")
+        c2 = next(c for c in POOL if c.name == "洞察")
+        a.hand += [c1, c2]
+        self.assertEqual(g.card_cost(a, c1), 2)
+        g.act_play(a, c1)
+        self.assertEqual(g.card_cost(a, c2), 1)
+        g.act_play(a, c2)
+        self.assertEqual(a.power, power - 3)
+        self.assertEqual(b.hp, hp - 3)
+
     def test_summon_red_green(self):
         g, a = self.new_game()
         red = next(c for c in starter_deck("warrior") if c.color == RED and c.sigil == 3)

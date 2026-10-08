@@ -3,6 +3,7 @@
 运行：python3 simulate.py              每种职业组合各 20 局（共 180 局）
       python3 simulate.py 100          每种组合各 100 局
       python3 simulate.py 1 --log      打印一局的完整过程
+      python3 simulate.py 30 --skill   上下限：每个职业用新手 / 高手人机，对普通人机打
 """
 
 import argparse
@@ -20,6 +21,37 @@ def one_game(args):
     g = Game(("甲", "乙"), (AIController(), AIController()), seed=seed, log=lambda *x: None, classes=(a, b))
     w = g.play()
     return a, b, (w.cls if w else None), (w.is_first if w else None), sum(p.turns for p in g.players)
+
+
+def skill_game(args):
+    cls, level, foe, seat, seed = args
+    from shuangshengwen.ai import AIController
+    from shuangshengwen.engine import Game
+    ctrls = [AIController(), AIController()]
+    ctrls[seat] = AIController(level=level)
+    classes = [foe, foe]
+    classes[seat] = cls
+    g = Game(("甲", "乙"), tuple(ctrls), seed=seed, log=lambda *x: None, classes=tuple(classes))
+    w = g.play()
+    return cls, level, w is g.players[seat]
+
+
+def run_skill(per_pair: int, only: list[str]) -> None:
+    """下限 = 新手人机的胜率，上限 = 高手人机的胜率；对手都是普通人机，三个职业轮流当对手、轮流先后手。"""
+    jobs = [(c, lv, f, seat, k * 31 + seat * 7 + 3)
+            for c in only for lv in ("weak", "strong") for f in CLASSES for seat in (0, 1)
+            for k in range(per_pair)]
+    with Pool(max(1, cpu_count())) as pool:
+        out = pool.map(skill_game, jobs, chunksize=2)
+    win, n = Counter(), Counter()
+    for c, lv, w in out:
+        n[(c, lv)] += 1
+        win[(c, lv)] += w
+    print(f"共 {len(out)} 局（对手都是普通人机）")
+    for c in only:
+        lo = win[(c, "weak")] / n[(c, "weak")]
+        hi = win[(c, "strong")] / n[(c, "strong")]
+        print(f"  {c}：新手 {lo:.0%}，高手 {hi:.0%}，差距 {hi - lo:+.0%}")
 
 
 def run(per_pair: int) -> None:
@@ -56,5 +88,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("n", type=int, nargs="?", default=20, help="每种职业组合打几局")
     ap.add_argument("--log", action="store_true", help="打印一局的完整过程")
+    ap.add_argument("--skill", action="store_true", help="测各职业的上下限")
+    ap.add_argument("--only", nargs="*", default=CLASSES, help="只测这些职业的上下限")
     a = ap.parse_args()
-    show_one() if a.log else run(a.n)
+    show_one() if a.log else run_skill(a.n, a.only) if a.skill else run(a.n)
